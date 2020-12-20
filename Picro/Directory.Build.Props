@@ -1,0 +1,14 @@
+<Project>
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
+	<ItemDefinitionGroup>
+		<PackageReference>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<ProjectReference>
+			<PrivateAssets>all</PrivateAssets>
+		</ProjectReference>
+	</ItemDefinitionGroup>
+</Project>

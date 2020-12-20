@@ -1,0 +1,28 @@
+﻿@using Picro.Client.Components.General.Flex.Enums
+@using Picro.Client.Pages
+<div class=@BurgerMenuClass>
+    <i @onclick="() => IsOpened = !IsOpened"
+       class="material-icons MenuIcon">
+        menu
+    </i>
+    @if (IsOpened)
+    {
+        <Flex class="MenuContainer"
+              Direction="FlexDirection.Column">
+            <Flex class="LinkContainer"
+                  Direction="FlexDirection.Column">
+                <NavLink class="nav-link" href="counter">
+                    <i class="material-icons MenuIcon" aria-hidden="true">home</i>
+                    Home
+                </NavLink>
+            </Flex>
+        </Flex>
+    }
+</div>
+
+@code
+{
+    private string BurgerMenuClass => $"BurgerMenu {(IsOpened ? "Opened" : "Closed")}";
+
+    private bool IsOpened { get; set; }
+}

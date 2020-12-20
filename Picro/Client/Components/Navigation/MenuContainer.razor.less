@@ -1,0 +1,24 @@
+﻿.BurgerMenu {
+    height: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 30%;
+    transition: 0.5s ease-in-out width;
+
+    .MenuIcon {
+        cursor: pointer;
+        font-size: 50px;
+        user-select: none;
+    }
+
+    &.Opened {
+        background-color: white;
+        border-right: 1px solid black;
+        width: 30%;
+    }
+
+    &.Closed {
+        width: 50px;
+    }
+}
