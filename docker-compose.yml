@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  picro.server:
+    image: ${DOCKER_REGISTRY-}picroserver
+    build:
+      context: .
+      dockerfile: Picro/Server/Dockerfile
+    labels:
+      - picrocompose
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentificationCookieName=ClientIdent
+      - CloudStorageAccountConnectionString=DefaultEndpointsProtocol=https;AccountName=picro;AccountKey=xIC2jeagC4ZnATIza8XRJL2DRimgPBK8Bgdl82KzGW3qo3KQirHLsAMb4SqV8lJnVL1FXsuLOw6asQGnfjHmCQ==;EndpointSuffix=core.windows.net
+    ports:
+      - 1442:443
+
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: docker.io/library/rabbitmq:3.8.6-management
+    labels:
+      - picrocompose
+    ports:
+      - "12643:15672"

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Autofac" Version="6.1.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.7.0" />
+		<PackageReference Include="MassTransit" Version="7.1.1" />
+		<PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Picro.Common.Eventing\Picro.Common.Eventing.csproj" />
+		<ProjectReference Include="..\..\Picro.Common.Storage\Picro.Common.Storage.csproj" />
+		<ProjectReference Include="..\..\Picro.Common\Picro.Common.csproj" />
+		<ProjectReference Include="..\Picro.Module.Identity\Picro.Module.Identity.csproj" />
+	</ItemGroup>
+</Project>

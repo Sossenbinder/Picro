@@ -1,28 +1,82 @@
 ﻿@using Picro.Client.Components.General.Flex.Enums
-@using Picro.Client.Pages
-<div class=@BurgerMenuClass>
-    <i @onclick="() => IsOpened = !IsOpened"
-       class="material-icons MenuIcon">
-        menu
-    </i>
-    @if (IsOpened)
+@using Picro.Client.Extensions
+@using Picro.Client.Utils
+@using System.Net.NetworkInformation
+
+<div id="BurgerMenu" class="BurgerMenu">
+    @if (!IsOpened)
     {
-        <Flex class="MenuContainer"
-              Direction="FlexDirection.Column">
-            <Flex class="LinkContainer"
-                  Direction="FlexDirection.Column">
-                <NavLink class="nav-link" href="counter">
-                    <i class="material-icons MenuIcon" aria-hidden="true">home</i>
-                    Home
-                </NavLink>
-            </Flex>
-        </Flex>
+        <i @onclick=@HandleMenuButtonClick
+           class="material-icons MenuIcon">
+            menu
+        </i>
     }
+    <Flex Id="MenuContainer"
+          Class=@MenuContainerClass
+          Direction="FlexDirection.Column">
+        <i @onclick=@HandleMenuButtonClick
+           class="material-icons MenuIconEmbedded">
+            menu
+        </i>
+        <Flex Class="LinkContainer"
+              Direction="FlexDirection.Column">
+            <NavLink @onclick=@HandleMenuButtonClick
+                     class="nav-link"
+                     href="/">
+                <i class="material-icons" aria-hidden="true">home</i>
+                Home
+            </NavLink>
+            <NavLink @onclick=@HandleMenuButtonClick
+                     class="nav-link" href="/Images/Overview">
+                <i class="material-icons" aria-hidden="true">image</i>
+                Images
+            </NavLink>
+        </Flex>
+    </Flex>
 </div>
 
 @code
 {
-    private string BurgerMenuClass => $"BurgerMenu {(IsOpened ? "Opened" : "Closed")}";
+    [Inject]
+    public GlobalClickHandler GlobalClickHandler { get; set; }
+
+    [Inject]
+    private IJSRuntime _jsRuntime { get; set; }
+
+    private string MenuContainerClass => $"MenuContainer {(IsOpened ? "Opened" : "Closed")}";
 
     private bool IsOpened { get; set; }
+
+    private BoundingRect _boundingRect;
+
+    private int translateOnOpen = 160;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        GlobalClickHandler.OnClick += OnGlobalClick;
+        await InitBoundingRect();
+    }
+
+    private void HandleMenuButtonClick(MouseEventArgs eventArgs)
+    {
+        IsOpened = !IsOpened;
+    }
+
+    private async Task InitBoundingRect()
+    {
+        var boundingRect = await _jsRuntime.InvokeAsync<BoundingRect>("getComponentCoordinates", "MenuContainer");
+        boundingRect.ShiftRight(160);
+        _boundingRect = boundingRect;
+    }
+
+    private void OnGlobalClick(object sender, MouseEventArgs eventArgs)
+    {
+        if (!IsOpened || _boundingRect.IsWithinXBounds(eventArgs.OffsetX))
+        {
+            return;
+        }
+
+        IsOpened = false;
+        StateHasChanged();
+    }
 }

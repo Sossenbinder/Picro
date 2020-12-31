@@ -43,6 +43,9 @@ namespace Picro.Client.Components.General.Flex
         public RenderFragment? ChildContent { get; init; }
 
         [Parameter]
+        public string Id { get; init; }
+
+        [Parameter]
         public string? Title { get; init; }
 
         #endregion Parameters

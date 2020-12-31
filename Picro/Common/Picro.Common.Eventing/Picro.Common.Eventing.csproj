@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="DI\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Autofac" Version="6.1.0" />
+	  <PackageReference Include="Azure.Storage.Blobs" Version="12.7.0" />
+	  <PackageReference Include="MassTransit" Version="7.1.1" />
+	  <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.1" />
+	  <PackageReference Include="MassTransit.SignalR" Version="7.1.1" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Picro.Common.SignalR\Picro.Common.SignalR.csproj" />
+	  <ProjectReference Include="..\Picro.Common\Picro.Common.csproj" />
+	</ItemGroup>
+</Project>

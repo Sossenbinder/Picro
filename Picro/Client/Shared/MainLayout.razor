@@ -1,9 +1,17 @@
-﻿@inherits LayoutComponentBase
+﻿@using Picro.Client.Utils
+@inherits LayoutComponentBase
 
-<div class="sidebar">
+<div class="ContentContainer"
+     @onclick="GlobalClickHandler.HandleClick"
+     style="height: 100%">
     <MenuContainer />
+    <div class="BodyContainer">
+        @Body
+    </div>
 </div>
 
-<div class="LayoutContainer">
-    @Body
-</div>
+@code
+{
+    [Inject]
+    public GlobalClickHandler GlobalClickHandler { get; set; }
+}

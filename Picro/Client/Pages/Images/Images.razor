@@ -1,0 +1,44 @@
+﻿@page "/Images/Overview"
+@using Picro.Client.Components.General.Flex.Enums
+@using Picro.Client.Services.Interface
+@using Picro.Module.Image.Utils
+
+<div class="ImagePageGrid">
+    <Flex Class="ImageList">
+        Top
+    </Flex>
+    <Flex Class="ImageUploadSection"
+          MainAlign="FlexAlign.Center"
+          CrossAlign="FlexAlign.Center">
+        Take Picture
+    </Flex>
+    <Flex Class="ImageUploadSection"
+          MainAlign="FlexAlign.Center"
+          CrossAlign="FlexAlign.Center">
+        Upload existing picture
+        <InputFile OnChange=@OnInputFileChange
+                   accept=@_allowedImageExtensions>
+            Test
+        </InputFile>
+    </Flex>
+</div>
+
+@code
+{
+    [Inject]
+    private IImageService ImageService { get; set; } = null!;
+
+    private string _allowedImageExtensions;
+
+    protected override void OnInitialized()
+    {
+        _allowedImageExtensions = string.Join(',', AllowedImageExtensions.ImageExtensions);
+
+        base.OnInitialized();
+    }
+
+    private Task OnInputFileChange(InputFileChangeEventArgs args)
+    {
+        return ImageService.UploadImage(args.File);
+    }
+}

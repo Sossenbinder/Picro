@@ -8,8 +8,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
 COPY ["Picro/Server/Picro.Server.csproj", "Picro/Server/"]
-COPY ["Picro/Shared/Picro.Shared.csproj", "Picro/Shared/"]
 COPY ["Picro/Client/Picro.Client.csproj", "Picro/Client/"]
+COPY ["Picro/Common/Picro.Common/Picro.Common.csproj", "Picro/Common/Picro.Common/"]
+COPY ["Picro/Common/Picro.Common.Web/Picro.Common.Web.csproj", "Picro/Common/Picro.Common.Web/"]
+COPY ["Picro/Common/Modules/Picro.Module.Identity/Picro.Module.Identity.csproj", "Picro/Common/Modules/Picro.Module.Identity/"]
 RUN dotnet restore "Picro/Server/Picro.Server.csproj"
 COPY . .
 WORKDIR "/src/Picro/Server"

@@ -1,4 +1,9 @@
-.LayoutContainer {
-  background-color: white;
-  margin-top: 50px;
+.ContentContainer {
+  position: relative;
+}
+.ContentContainer .BodyContainer {
+  position: absolute;
+  top: 50px;
+  height: calc(100% - 34px);
+  width: 100%;
 }

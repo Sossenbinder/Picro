@@ -7,21 +7,28 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Delegate.LessBuilder" Version="1.3.0" />
+		<PackageReference Include="Autofac" Version="6.1.0" />
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Common\Modules\Picro.Module.Image\Picro.Module.Image.csproj" />
+		<ProjectReference Include="..\Common\Picro.Common.Web\Picro.Common.Web.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common\Picro.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="**\*.razor.css" Exclude="**\*.razor.css" Watch="false" />
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+		<Folder Include="DataTypes\" />
+		<Folder Include="DataTypes\InteropObjects\" />
 	</ItemGroup>
 </Project>
