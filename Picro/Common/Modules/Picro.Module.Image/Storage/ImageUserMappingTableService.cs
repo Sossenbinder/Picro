@@ -21,16 +21,23 @@ namespace Picro.Module.Image.Storage
 
         public async Task<bool> AddNewImageEntryForUser(User user, Guid imageIdentifier, string imageUri)
         {
+            var table = await _imageUserMappingTable;
+
+            var imageIdentifierStringified = imageIdentifier.ToString();
             var userImageMappingEntity = new UserImageMappingEntity()
             {
-                PartitionKey = TableStoragePartitioner.Partition(user.Identifier),
-                RowKey = imageIdentifier.ToString(),
+                PartitionKey = imageIdentifierStringified,
+                RowKey = imageIdentifierStringified,
                 ImageUri = imageUri,
                 ImageIdentifier = imageIdentifier,
                 UserIdentifier = user.Identifier,
             };
 
-            return true;
+            var operation = TableOperation.InsertOrMerge(userImageMappingEntity);
+
+            var result = await table.ExecuteAsync(operation);
+
+            return result.HasSuccessfulStatusCode();
         }
     }
 }

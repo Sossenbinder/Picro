@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Azure.Cosmos.Table;
 
 namespace Picro.Common.Storage.Extensions
 {
-    public class TableResultExtensions
+    public static class TableResultExtensions
     {
-        
+        public static bool HasSuccessfulStatusCode(this TableResult tableResult) =>
+            tableResult.HttpStatusCode >= 200 || tableResult.HttpStatusCode < 300;
     }
 }

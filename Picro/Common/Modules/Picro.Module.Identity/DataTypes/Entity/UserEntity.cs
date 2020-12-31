@@ -5,20 +5,16 @@ namespace Picro.Module.Identity.DataTypes.Entity
 {
     public class UserEntity : TableEntity
     {
-        public string UnderlyingIdentifier { get; set; }
+        public Guid Identifier { get; set; }
 
-        [IgnoreProperty]
-        public Guid Identifier
-        {
-            get => Guid.Parse(UnderlyingIdentifier);
-            set => UnderlyingIdentifier = value.ToString();
-        }
+        public DateTime LastAccessedAtUtc { get; set; }
 
         public User ToUserModel()
         {
             return new()
             {
                 Identifier = Identifier,
+                LastAccessedAtUtc = LastAccessedAtUtc,
             };
         }
     }

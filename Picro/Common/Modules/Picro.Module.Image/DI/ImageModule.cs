@@ -27,6 +27,11 @@ namespace Picro.Module.Image.DI
             builder.RegisterType<ImageUserMappingTableService>()
                 .As<IImageUserMappingTableService>()
                 .SingleInstance();
+
+            builder.RegisterType<ImageDistributionService>()
+                .As<IImageDistributionService>()
+                .SingleInstance()
+                .AutoActivate();
         }
     }
 }

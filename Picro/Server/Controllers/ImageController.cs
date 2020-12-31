@@ -19,9 +19,9 @@ namespace Picro.Server.Controllers
 
         public ImageController(
             IImageService imageService,
-            IUserIdentityService userIdentityService,
+            IUserService userService,
             IConfiguration configuration)
-            : base(userIdentityService,
+            : base(userService,
                 configuration)
         {
             _imageService = imageService;
@@ -50,6 +50,6 @@ namespace Picro.Server.Controllers
                 : JsonResponse.Error(ImageUploadResponse.UploadFailed);
         }
 
-        private string GetFileNameExtensions(string fileName) => fileName.Substring(fileName.LastIndexOf('.'));
+        private static string GetFileNameExtensions(string fileName) => fileName.Substring(fileName.LastIndexOf('.'));
     }
 }

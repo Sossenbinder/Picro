@@ -12,16 +12,20 @@ namespace Picro.Module.Identity.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<UserIdentityService>()
-                .As<IUserIdentityService>()
+            builder.RegisterType<UserService>()
+                .As<IUserService>()
                 .SingleInstance();
 
-            builder.RegisterType<TableStorageIdentityStorageService>()
-                .As<IIdentityStorageService>()
+            builder.RegisterType<TableStorageUserStorageService>()
+                .As<IUsersStorageRepositoryService, ICommonUserStorageService>()
                 .SingleInstance();
 
-            builder.RegisterType<ConnectedUserCache>()
-                .As<IConnectedUserCache>()
+            builder.RegisterType<CachedUserStorageService>()
+                .As<IUserStorageService>()
+                .SingleInstance();
+
+            builder.RegisterType<UserCache>()
+                .As<IUserCache>()
                 .SingleInstance();
         }
     }

@@ -16,33 +16,43 @@ namespace Picro.Module.Image.Service
     {
         private readonly IImageStorageService _imageStorageService;
 
-        private readonly IMassTransitSignalRBackplaneService _massTransitSignalRBackplaneService;
+        private readonly IImageUserMappingTableService _imageUserMappingTableService;
 
         private readonly IImageEventHub _imageEventHub;
 
         public ImageService(
             IImageStorageService imageStorageService,
-            IMassTransitSignalRBackplaneService massTransitSignalRBackplaneService,
+            IImageUserMappingTableService imageUserMappingTableService,
             IImageEventHub imageEventHub)
         {
             _imageStorageService = imageStorageService;
-            _massTransitSignalRBackplaneService = massTransitSignalRBackplaneService;
+            _imageUserMappingTableService = imageUserMappingTableService;
             _imageEventHub = imageEventHub;
         }
 
         public async Task<bool> UploadImage(User user, Stream imageStream)
         {
-            var fileName = $"{user.Identifier}/{Guid.NewGuid()}.png";
+            var imageIdentifier = Guid.NewGuid();
+            var fileName = $"{user.Identifier}/{imageIdentifier}.png";
 
-            var uploadSuccess = await _imageStorageService.UploadImage(user.Identifier, imageStream, fileName);
+            var (success, uri) = await _imageStorageService.UploadImage(user.Identifier, imageStream, fileName);
 
-            _imageEventHub.ImageUploaded.RaiseFireAndForget(new ImageUploadedEvent("Bla"));
-
-            if (uploadSuccess)
+            if (!success)
             {
+                return false;
             }
 
-            return uploadSuccess;
+            var mappingEntrySuccess = await _imageUserMappingTableService.AddNewImageEntryForUser(user, imageIdentifier, uri!);
+
+            if (!mappingEntrySuccess)
+            {
+                return false;
+            }
+
+            // Upload worked fine, now let's share the image around
+            _imageEventHub.ImageUploaded.RaiseFireAndForget(new ImageUploadedEvent(user, uri!));
+
+            return true;
         }
     }
 }

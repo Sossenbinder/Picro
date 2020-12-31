@@ -13,7 +13,7 @@ namespace Picro.Server.Controllers
     {
         private readonly string _identificationCookieName;
 
-        private readonly IUserIdentityService _userIdentityService;
+        private readonly IUserService _userService;
 
         protected User? UserOrNull { get; private set; }
 
@@ -30,11 +30,11 @@ namespace Picro.Server.Controllers
         }
 
         protected SessionBaseController(
-            IUserIdentityService userIdentityService,
+            IUserService userService,
             IConfiguration configuration)
         {
             _identificationCookieName = configuration["IdentificationCookieName"];
-            _userIdentityService = userIdentityService;
+            _userService = userService;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -46,7 +46,7 @@ namespace Picro.Server.Controllers
         private async Task InitUser()
         {
             var callerId = Guid.Parse(Request.Cookies[_identificationCookieName]!);
-            UserOrNull = await _userIdentityService.GetUser(callerId);
+            UserOrNull = await _userService.GetUser(callerId);
         }
     }
 }

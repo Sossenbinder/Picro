@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
-using Picro.Common.Utils;
 using Picro.Common.Utils.Async;
+using Picro.Module.Image.DataTypes;
 using Picro.Module.Image.Storage.Interface;
 
 namespace Picro.Module.Image.Storage
@@ -32,7 +32,7 @@ namespace Picro.Module.Image.Storage
             });
         }
 
-        public async Task<bool> UploadImage(Guid userId, Stream imageStream, string fileName)
+        public async Task<ImageUploadInfo> UploadImage(Guid userId, Stream imageStream, string fileName)
         {
             var containerClient = await _blobContainerClient;
 
@@ -41,12 +41,13 @@ namespace Picro.Module.Image.Storage
             try
             {
                 await blobClient.UploadAsync(imageStream, true);
-                return true;
+
+                return new ImageUploadInfo(true, blobClient.Uri.ToString());
             }
             catch (RequestFailedException e)
             {
                 _logger.LogError(e, "Upload of image failed");
-                return false;
+                return new ImageUploadInfo(false, null);
             }
         }
     }

@@ -29,7 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commons", "Commons", "{DA68
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Picro.Common.Eventing", "Picro\Common\Picro.Common.Eventing\Picro.Common.Eventing.csproj", "{8E9D8CED-AEAD-48F5-94DE-71AF926E306A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Picro.Common.SignalR", "Picro\Common\Picro.Common.SignalR\Picro.Common.SignalR.csproj", "{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Picro.Common.SignalR", "Picro\Common\Picro.Common.SignalR\Picro.Common.SignalR.csproj", "{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Picro.Module.Interaction", "Picro\Common\Modules\Picro.Module.Interaction\Picro.Module.Interaction.csproj", "{81DC9510-F63C-481C-9702-488BCCA3ABF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DC9510-F63C-481C-9702-488BCCA3ABF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DC9510-F63C-481C-9702-488BCCA3ABF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DC9510-F63C-481C-9702-488BCCA3ABF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DC9510-F63C-481C-9702-488BCCA3ABF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,9 +102,10 @@ Global
 		{DA68437C-A5A1-40F1-A239-84A9D38C9EAB} = {91DA1351-1D10-40A5-AB95-39B8459FB6E6}
 		{8E9D8CED-AEAD-48F5-94DE-71AF926E306A} = {DA68437C-A5A1-40F1-A239-84A9D38C9EAB}
 		{BE1D9DB0-A920-4F84-B0FA-D87979D9DC28} = {DA68437C-A5A1-40F1-A239-84A9D38C9EAB}
+		{81DC9510-F63C-481C-9702-488BCCA3ABF9} = {93F9A0EE-0933-4068-BB2D-831FDE1E325B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		LessCompiler = 082fc6a9-dbd3-4351-bf99-90e25b5fa72e
 		SolutionGuid = {42F8D789-6DDE-4F10-AEEF-84E6ED61F6CC}
+		LessCompiler = 082fc6a9-dbd3-4351-bf99-90e25b5fa72e
 	EndGlobalSection
 EndGlobal

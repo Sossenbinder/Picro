@@ -12,15 +12,15 @@ namespace Picro.Server.Controllers
     [Route("[controller]")]
     public class IdentityController : ControllerBase
     {
-        private readonly IUserIdentityService _userIdentityService;
+        private readonly IUserService _userService;
 
         private readonly string _identificationCookieName;
 
         public IdentityController(
-            IUserIdentityService userIdentityService,
+            IUserService userService,
             IConfiguration configuration)
         {
-            _userIdentityService = userIdentityService;
+            _userService = userService;
             _identificationCookieName = configuration["IdentificationCookieName"];
         }
 
@@ -47,7 +47,7 @@ namespace Picro.Server.Controllers
 
                 Response.Cookies.Append(_identificationCookieName, callerId.ToString(), cookieOptions);
 
-                await _userIdentityService.RegisterNewUser(callerId);
+                await _userService.RegisterNewUser(callerId);
 
                 return JsonResponse.Success();
             }
@@ -55,7 +55,7 @@ namespace Picro.Server.Controllers
             {
                 callerId = Guid.Parse(Request.Cookies[_identificationCookieName]!);
 
-                if (await _userIdentityService.IdentifyUser(callerId))
+                if (await _userService.IdentifyUser(callerId))
                 {
                     return JsonResponse.Success();
                 }
