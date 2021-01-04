@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Picro.Client.Communication.Interface;
+using Picro.Common.Eventing.Notifications;
+using Picro.Common.Extensions;
 
 namespace Picro.Client.Communication
 {
@@ -28,6 +30,19 @@ namespace Picro.Client.Communication
             {
                 Console.WriteLine("Failed to initialize websocket connection, will revert to long polling...");
             }
+        }
+
+        public IDisposable RegisterHandler<T>(NotificationType notificationType, Action<FrontendNotification<T>> handler)
+            => RegisterHandler(notificationType, handler.MakeTaskCompatible()!);
+
+        public IDisposable RegisterHandler<T>(NotificationType notificationType, Func<FrontendNotification<T>, Task> handler)
+        {
+            return _hubConnection.On(notificationType.ToString(), handler);
+        }
+
+        public void RemoveAllHandlers(NotificationType notificationType)
+        {
+            _hubConnection.Remove(notificationType.ToString());
         }
     }
 }

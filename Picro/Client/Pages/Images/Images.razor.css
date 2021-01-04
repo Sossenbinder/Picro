@@ -1,13 +1,17 @@
-.ImagePageGrid {
+.Container {
+  height: 100%;
+}
+.Container ::deep .ImagePageGrid {
   display: grid;
   grid-template-rows: 95% 5%;
   height: 100%;
 }
-.ImagePageGrid ::deep .ImageList {
+.Container ::deep .ImagePageGrid .ImageList {
   grid-column: 1 / 3;
   border: 1px solid black;
+  overflow-y: auto;
 }
-.ImagePageGrid ::deep .ImageUploadSection {
+.Container ::deep .ImagePageGrid .ImageUploadSection {
   margin: 3px;
   width: 100%;
   border: 1px solid black;

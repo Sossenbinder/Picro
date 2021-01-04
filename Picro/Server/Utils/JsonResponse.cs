@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.AspNetCore.Mvc;
+using Picro.Common.Web.DataTypes;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Picro.Common.Web.DataTypes;
 
 namespace Picro.Server.Utils
 {
@@ -25,12 +25,12 @@ namespace Picro.Server.Utils
             return new(data, internalSuccess, HttpStatusCode.OK);
         }
 
-        public static JsonDataResponse<TPayload> Success<TPayload>(TPayload data = default, bool internalSuccess = true)
+        public static JsonResponse<TPayload> Success<TPayload>(TPayload data = default, bool internalSuccess = true)
         {
             return new(data, internalSuccess, HttpStatusCode.OK);
         }
 
-        public static JsonDataResponse<TPayload> Error<TPayload>(TPayload data = default, bool internalSuccess = false)
+        public static JsonResponse<TPayload> Error<TPayload>(TPayload data = default, bool internalSuccess = false)
         {
             return new(data, internalSuccess, HttpStatusCode.OK);
         }
@@ -47,19 +47,19 @@ namespace Picro.Server.Utils
         }
     }
 
-    public class JsonDataResponse<T> : JsonResponse
+    public class JsonResponse<T> : JsonResponse
     {
-        public JsonDataResponse(T? data, bool success, HttpStatusCode statusCode)
+        public JsonResponse(T? data, bool success, HttpStatusCode statusCode)
             : base(data, success, statusCode)
         {
         }
 
-        public static JsonDataResponse<T> Success(T? data = default, bool internalSuccess = true)
+        public static JsonResponse<T> Success(T? data = default, bool internalSuccess = true)
         {
             return new(data, internalSuccess, HttpStatusCode.OK);
         }
 
-        public static JsonDataResponse<T> Error(T? data = default)
+        public static JsonResponse<T> Error(T? data = default)
         {
             return new(data, false, HttpStatusCode.OK);
         }

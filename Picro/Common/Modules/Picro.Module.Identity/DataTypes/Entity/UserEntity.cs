@@ -1,20 +1,25 @@
 ﻿using System;
-using Microsoft.Azure.Cosmos.Table;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Picro.Module.Identity.DataTypes.Entity
 {
-    public class UserEntity : TableEntity
+    [Table("Users")]
+    public class UserEntity
     {
-        public Guid Identifier { get; set; }
+        [Key]
+        [Column("UserId")]
+        public Guid UserId { get; set; }
 
-        public DateTime LastAccessedAtUtc { get; set; }
+        [Column("LastAccessedAtUtc")]
+        public DateTime LastAccessedAt { get; set; }
 
         public User ToUserModel()
         {
             return new()
             {
-                Identifier = Identifier,
-                LastAccessedAtUtc = LastAccessedAtUtc,
+                Identifier = UserId,
+                LastAccessedAtUtc = LastAccessedAt,
             };
         }
     }

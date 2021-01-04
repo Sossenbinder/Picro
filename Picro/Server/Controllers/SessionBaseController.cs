@@ -1,23 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Configuration;
 using Picro.Module.Identity.DataTypes;
 using Picro.Module.Identity.Service.Interface;
+using System;
+using System.Threading.Tasks;
 
 namespace Picro.Server.Controllers
 {
     [ApiController]
     public abstract class SessionBaseController : Controller
     {
-        private readonly string _identificationCookieName;
-
         private readonly IUserService _userService;
 
         protected User? UserOrNull { get; private set; }
 
-        protected User User
+        protected new User User
         {
             get
             {
@@ -29,11 +26,8 @@ namespace Picro.Server.Controllers
             }
         }
 
-        protected SessionBaseController(
-            IUserService userService,
-            IConfiguration configuration)
+        protected SessionBaseController(IUserService userService)
         {
-            _identificationCookieName = configuration["IdentificationCookieName"];
             _userService = userService;
         }
 
@@ -45,8 +39,14 @@ namespace Picro.Server.Controllers
 
         private async Task InitUser()
         {
-            var callerId = Guid.Parse(Request.Cookies[_identificationCookieName]!);
-            UserOrNull = await _userService.GetUser(callerId);
+            var userId = HttpContext.User.Identity?.Name;
+
+            if (userId == null)
+            {
+                return;
+            }
+
+            UserOrNull = await _userService.GetUser(Guid.Parse(userId));
         }
     }
 }

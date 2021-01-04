@@ -1,0 +1,41 @@
+﻿// no-minify
+
+.Container {
+    width: 100%;
+
+    ::deep .NotificationMenu {
+        position: fixed;
+        right: 0px;
+
+        .NotificationBell {
+            position: relative;
+
+            .NotificationBellIcon {
+                font-size: 50px;
+                user-select: none;
+                cursor: pointer;
+            }
+
+            .NotificationCountBubble {
+                background: red;
+                border-radius: 50%;
+                color: white;
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+                width: 18px;
+                height: 18px;
+
+                .NotificationCount {
+                    margin-left: 5px;
+                }
+            }
+        }
+
+        .SpeechBubble {
+            border: 1px solid black;
+            border-radius: 15px;
+            width: 200px;
+        }
+    }
+}

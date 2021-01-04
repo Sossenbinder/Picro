@@ -60,12 +60,16 @@ namespace Picro.Client
                 .As<ISessionService>()
                 .SingleInstance();
 
-            builder.RegisterType<ImageService>()
-                .As<IImageService>()
+            builder.RegisterType<PersonalImageService>()
+                .As<IPersonalImageService>()
                 .SingleInstance();
 
             builder.RegisterType<RequestMessageFactory>()
                 .As<IRequestMessageFactory>()
+                .SingleInstance();
+
+            builder.RegisterType<DistributedImageService>()
+                .As<IDistributedImageService>()
                 .SingleInstance();
         }
 

@@ -1,0 +1,35 @@
+.Container {
+  width: 100%;
+}
+.Container ::deep .NotificationMenu {
+  position: fixed;
+  right: 0px;
+}
+.Container ::deep .NotificationMenu .NotificationBell {
+  position: relative;
+}
+.Container ::deep .NotificationMenu .NotificationBell .NotificationBellIcon {
+  font-size: 50px;
+  -webkit-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.Container ::deep .NotificationMenu .NotificationBell .NotificationCountBubble {
+  background: red;
+  border-radius: 50%;
+  color: white;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 18px;
+  height: 18px;
+}
+.Container ::deep .NotificationMenu .NotificationBell .NotificationCountBubble .NotificationCount {
+  margin-left: 5px;
+}
+.Container ::deep .NotificationMenu .SpeechBubble {
+  border: 1px solid black;
+  border-radius: 15px;
+  width: 200px;
+}

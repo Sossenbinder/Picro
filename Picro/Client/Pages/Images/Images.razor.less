@@ -1,20 +1,25 @@
 ﻿// no-minify
 
-.ImagePageGrid {
-    display: grid;
-    grid-template-rows: 95% 5%;
+.Container {
     height: 100%;
 
-    ::deep .ImageList {
-        grid-column: ~"1 / 3";
-        border: 1px solid black;
-    }
+    ::deep .ImagePageGrid {
+        display: grid;
+        grid-template-rows: 95% 5%;
+        height: 100%;
 
-    ::deep .ImageUploadSection {
-        margin: 3px;
-        width: 100%;
-        border: 1px solid black;
-        border-radius: 10px;
-        cursor: pointer;
+        .ImageList {
+            grid-column: ~"1 / 3";
+            border: 1px solid black;
+            overflow-y: auto;
+        }
+
+        .ImageUploadSection {
+            margin: 3px;
+            width: 100%;
+            border: 1px solid black;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     }
 }

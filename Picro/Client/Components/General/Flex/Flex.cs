@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Picro.Client.Components.General.Flex.Enums;
 using Picro.Client.Utils;
@@ -16,7 +17,7 @@ namespace Picro.Client.Components.General.Flex
         public string? Style { get; init; }
 
         [Parameter]
-        public Action? OnClick { get; init; }
+        public Func<Task>? OnClick { get; init; }
 
         [Parameter]
         public FlexDirection Direction { get; init; } = FlexDirection.Row;

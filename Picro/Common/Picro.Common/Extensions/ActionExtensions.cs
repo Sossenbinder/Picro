@@ -5,7 +5,7 @@ namespace Picro.Common.Extensions
 {
     public static class ActionExtensions
     {
-        public static Func<Task>? MakeTaskCompatible<T>(this Action? action)
+        public static Func<Task>? MakeTaskCompatible(this Action? action)
         {
             if (action == null)
             {

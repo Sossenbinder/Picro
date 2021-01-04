@@ -1,0 +1,25 @@
+﻿<div class="Container">
+    <Flex Class="NotificationMenu">
+        @if (_isOpened)
+        {
+            <Flex Class="SpeechBubble">
+                Speech Bubble
+            </Flex>
+        }
+        <Flex Class="NotificationBell">
+            <i class="material-icons NotificationBellIcon"
+               aria-hidden="true"
+               @onclick=OnBellClick>
+                notifications
+            </i>
+            @if (_notificationCount > 0 && !_isOpened)
+            {
+                <Flex class="NotificationCountBubble">
+                    <span class="NotificationCount">
+                        @_notificationCount
+                    </span>
+                </Flex>
+            }
+        </Flex>
+    </Flex>
+</div>

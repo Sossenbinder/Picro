@@ -1,18 +1,24 @@
 using Autofac;
 using MassTransit;
 using MassTransit.SignalR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Picro.Common.Eventing.DI;
 using Picro.Common.Eventing.Helper;
+using Picro.Common.SignalR.DI;
 using Picro.Common.SignalR.Hubs;
 using Picro.Common.Storage.DI;
 using Picro.Module.Identity.DI;
 using Picro.Module.Image.DI;
+using System;
+using System.Threading.Tasks;
 
 namespace Picro.Server
 {
@@ -40,6 +46,27 @@ namespace Picro.Server
             services.AddRazorPages();
             services.AddSignalR();
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Events.OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+
+                    options.ExpireTimeSpan = TimeSpan.FromDays(100 * 365);
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.MaxAge = TimeSpan.FromDays(100 * 365);
+                    options.Cookie.SameSite = _webHostEnvironment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
+                    options.Cookie.Name = Configuration["IdentificationCookieName"];
+                });
+
+            services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
+            services.AddAntiforgery(x => x.HeaderName = "AntiForgery");
+            services.AddResponseCompression();
+
             ConfigureMassTransit(services);
 
             if (_webHostEnvironment.IsDevelopment())
@@ -52,7 +79,7 @@ namespace Picro.Server
                             builder
                                 .WithOrigins("https://localhost:5001")
                                 .AllowAnyHeader()
-                                .WithMethods("GET", "POST")
+                                .WithMethods(HttpMethods.Get, HttpMethods.Post, HttpMethods.Delete)
                                 .AllowCredentials();
                         }
                     );
@@ -83,6 +110,7 @@ namespace Picro.Server
             builder.RegisterModule<StorageModule>();
             builder.RegisterModule<ImageModule>();
             builder.RegisterModule<EventingModule>();
+            builder.RegisterModule<SignalRModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,13 +138,17 @@ namespace Picro.Server
 
             app.UseRouting();
 
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
 
                 // Route to serve blazor app
-                endpoints.MapFallbackToFile("index.html");
+                //endpoints.MapFallbackToFile("index.html");
 
                 endpoints.MapHub<SessionHub>("/SessionHub");
             });

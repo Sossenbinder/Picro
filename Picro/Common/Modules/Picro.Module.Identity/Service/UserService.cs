@@ -1,46 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Picro.Common.Extensions;
+using Picro.Module.Identity.Cache.Interface;
 using Picro.Module.Identity.DataTypes;
 using Picro.Module.Identity.Service.Interface;
 using Picro.Module.Identity.Storage.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Picro.Module.Identity.Service
 {
     public class UserService : IUserService
     {
-        private readonly IUserStorageService _userStorageService;
+        private readonly IUserCache _userCache;
 
-        private readonly IUsersStorageRepositoryService _usersStorageRepositoryService;
+        private readonly IUserRepository _userRepository;
 
         private readonly ILogger _logger;
 
         public UserService(
-            IUserStorageService userStorageService,
-            IUsersStorageRepositoryService usersStorageRepositoryService,
+            IUserCache userCache,
+            IUserRepository userRepository,
             ILogger<UserService> logger)
         {
-            _userStorageService = userStorageService;
+            _userCache = userCache;
+            _userRepository = userRepository;
             _logger = logger;
-            _usersStorageRepositoryService = usersStorageRepositoryService;
         }
 
-        public async Task RegisterNewUser(Guid clientId)
+        public async Task RegisterNewUser(Guid userId)
         {
             var user = new User()
             {
-                Identifier = clientId,
+                Identifier = userId,
                 LastAccessedAtUtc = DateTime.UtcNow,
             };
 
-            await _userStorageService.InsertUser(user);
+            if (await _userRepository.InsertUser(user))
+            {
+                _userCache.PutUser(user);
+            }
         }
 
-        public async Task<bool> IdentifyUser(Guid clientId)
+        public async Task<bool> IdentifyUser(Guid userId)
         {
-            var user = await _userStorageService.FindUser(clientId);
+            var user = await GetUser(userId);
 
             if (user == null)
             {
@@ -48,34 +53,93 @@ namespace Picro.Module.Identity.Service
             }
 
 #pragma warning disable 4014
-            UpdateLastAccessedAt(clientId, DateTime.UtcNow);
+            UpdateLastAccessedAt(user, DateTime.UtcNow);
 #pragma warning restore 4014
 
             return true;
         }
 
-        public async Task UpdateLastAccessedAt(Guid clientId, DateTime? lastAccessedAtUtc = null)
+        public async Task UpdateLastAccessedAt(Guid userId, DateTime? lastAccessedAtUtc = null)
+        {
+            var user = await GetUser(userId);
+            await UpdateLastAccessedAt(user!, lastAccessedAtUtc);
+        }
+
+        public async Task<User?> GetUser(Guid userId)
+        {
+            var user = _userCache.GetUser(userId);
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            user = await _userRepository.FindUser(userId);
+
+            if (user != null)
+            {
+                _userCache.PutUser(user);
+            }
+            else
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        public async Task<bool> UpdateUser(Guid userId, Action<User> updateAction)
+        {
+            var user = await GetUser(userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            updateAction(user);
+
+            var remoteSuccess = await _userRepository.UpdateUser(user);
+
+            if (remoteSuccess)
+            {
+                _userCache.PutUser(user);
+            }
+
+            return remoteSuccess;
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            var remoteSuccess = await _userRepository.UpdateUser(user);
+
+            if (remoteSuccess)
+            {
+                _userCache.PutUser(user);
+            }
+
+            return remoteSuccess;
+        }
+
+        public async Task<IEnumerable<User>> GetRandomUsers(Guid idToExclude)
+        {
+            var randomUsers = (await _userRepository.GetRandomUsers(idToExclude)).ToList();
+
+            return randomUsers;
+        }
+
+        private async Task UpdateLastAccessedAt(User user, DateTime? lastAccessedAtUtc = null)
         {
             try
             {
                 var accessTime = lastAccessedAtUtc ?? DateTime.UtcNow;
-                await _userStorageService.UpdateUser(clientId, x => x.LastAccessedAtUtc = accessTime);
+                user.LastAccessedAtUtc = accessTime;
+                await _userRepository.UpdateUser(user);
             }
             catch (Exception e)
             {
-                _logger.LogException(e, $"Failed updating last access timestamp for client {clientId}");
+                _logger.LogException(e, $"Failed updating last access timestamp for user {user.Identifier}");
             }
-        }
-
-        public ValueTask<User?> GetUser(Guid clientId)
-            => _userStorageService.FindUser(clientId);
-
-        public Task UpdateUser(Guid clientId, Action<User> updateAction) =>
-            _userStorageService.UpdateUser(clientId, updateAction);
-
-        public async Task<IEnumerable<User>> GetRandomUsers(Guid idToExclude)
-        {
-            return new List<User>() { await GetUser(idToExclude) };
         }
     }
 }

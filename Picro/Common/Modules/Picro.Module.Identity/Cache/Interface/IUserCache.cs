@@ -1,11 +1,11 @@
-﻿using System;
-using Picro.Module.Identity.DataTypes;
+﻿using Picro.Module.Identity.DataTypes;
+using System;
 
 namespace Picro.Module.Identity.Cache.Interface
 {
-    internal interface IUserCache
+    public interface IUserCache
     {
-        void PutUser(Guid userId, User user);
+        void PutUser(User user);
 
         User? GetUser(Guid userId);
     }

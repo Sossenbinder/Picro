@@ -3,6 +3,6 @@
     public enum NotificationType
     {
         None,
-        NewImageReceived
+        ImageShared
     }
 }

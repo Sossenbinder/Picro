@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -25,27 +29,32 @@ namespace Picro.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("BeginSession")]
         public async Task<IActionResult> BeginSession()
         {
             Guid callerId;
 
-            if (!Request.Cookies.ContainsKey(_identificationCookieName))
+            if (!Request.HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
                 // We have a new client, lets add the cookie and register him in the database
                 callerId = Guid.NewGuid();
 
-                var cookieOptions = new CookieOptions()
-                {
-                    Expires = DateTime.UtcNow.AddYears(100),
-                    MaxAge = DateTime.UtcNow.AddYears(100).TimeOfDay,
-#if RELEASE
-				SameSite = SameSiteMode.None,
-				Secure = true,
-#endif
-                };
+                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+                identity.AddClaim(new Claim(ClaimTypes.Name, callerId.ToString()));
 
-                Response.Cookies.Append(_identificationCookieName, callerId.ToString(), cookieOptions);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    new AuthenticationProperties()
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTime.UtcNow.AddYears(100),
+                        AllowRefresh = true,
+                    }
+                );
 
                 await _userService.RegisterNewUser(callerId);
 
@@ -53,7 +62,9 @@ namespace Picro.Server.Controllers
             }
             else
             {
-                callerId = Guid.Parse(Request.Cookies[_identificationCookieName]!);
+                var userId = HttpContext.User.Identity!.Name!;
+
+                callerId = Guid.Parse(userId);
 
                 if (await _userService.IdentifyUser(callerId))
                 {

@@ -1,10 +1,11 @@
 ﻿namespace Picro.Module.Image.DataTypes.Enums
 {
-    public enum ImageUploadResponse
+    public enum ImageUploadErrorCode
     {
         Success,
         UploadFailed,
         InvalidFileEnding,
         NoFile,
+        UnspecifiedError,
     }
 }

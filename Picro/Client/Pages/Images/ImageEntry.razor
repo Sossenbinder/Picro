@@ -1,0 +1,56 @@
+﻿@using Picro.Module.Image.DataTypes.Response
+@using Picro.Client.Components.General.Flex.Enums
+
+<div class="Container">
+    <Flex Class="ImageEntry"
+          Direction="FlexDirection.Row">
+        <img class="ImageContent" src=@ImageInfo.ImageLink />
+        <Flex Class="InfoSection"
+              Direction="FlexDirection.Column">
+            <Flex Class="UploadTimeSection"
+                  Title="Upload date"
+                  Direction="FlexDirection.Row">
+                <i class="material-icons">schedule</i>
+                <span>@ImageInfo.UploadTimeStamp</span>
+            </Flex>
+            <Flex Class="ReactionSection"
+                  Direction="FlexDirection.Column">
+                <Flex Title="Likes"
+                      Direction="FlexDirection.Row">
+                    <i class="material-icons">thumb_up</i>
+                    <span>0</span>
+                </Flex>
+                <Flex Title="Dislikes"
+                      Direction="FlexDirection.Row">
+                    <i class="material-icons">thumb_down</i>
+                    <span>0</span>
+                </Flex>
+                <Flex Title="Comments"
+                      Direction="FlexDirection.Row">
+                    <i class="material-icons">comment</i>
+                    <span>0</span>
+                </Flex>
+            </Flex>
+            <Flex Class="DeleteSection"
+                  OnClick=@OnDeleteClick
+                  Direction="FlexDirection.Row">
+                <i class="material-icons">delete</i>
+                <span>Delete</span>
+            </Flex>
+        </Flex>
+    </Flex>
+</div>
+
+@code
+{
+    [Parameter]
+    public ImageInfo ImageInfo { get; set; }
+
+    [Parameter]
+    public Func<Guid, Task> OnImageDelete { get; set; }
+
+    private async Task OnDeleteClick()
+    {
+        await OnImageDelete(ImageInfo.ImageId);
+    }
+}

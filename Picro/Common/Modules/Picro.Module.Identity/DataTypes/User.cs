@@ -1,6 +1,5 @@
-﻿using System;
-using Picro.Common.Storage.Utils;
-using Picro.Module.Identity.DataTypes.Entity;
+﻿using Picro.Module.Identity.DataTypes.Entity;
+using System;
 
 namespace Picro.Module.Identity.DataTypes
 {
@@ -10,19 +9,12 @@ namespace Picro.Module.Identity.DataTypes
 
         public DateTime LastAccessedAtUtc { get; set; }
 
-        public string? ConnectionId { get; set; }
-
         public UserEntity ToEntity()
         {
-            var identifierStringified = Identifier.ToString();
-
-            return new UserEntity()
+            return new()
             {
-                Identifier = Identifier,
-                LastAccessedAtUtc = LastAccessedAtUtc,
-                ETag = "*",
-                RowKey = identifierStringified,
-                PartitionKey = identifierStringified
+                UserId = Identifier,
+                LastAccessedAt = LastAccessedAtUtc,
             };
         }
     }

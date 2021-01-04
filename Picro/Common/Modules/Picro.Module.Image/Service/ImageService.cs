@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Picro.Common.Eventing.Events.MassTransit.Interface;
-using Picro.Common.Eventing.Helper;
-using Picro.Common.Eventing.Notifications;
-using Picro.Module.Identity.DataTypes;
+﻿using Picro.Module.Identity.DataTypes;
 using Picro.Module.Image.DataTypes;
+using Picro.Module.Image.DataTypes.Response;
 using Picro.Module.Image.Event.Interface;
 using Picro.Module.Image.Service.Interface;
 using Picro.Module.Image.Storage.Interface;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Picro.Module.Image.DataTypes.Enums;
 
 namespace Picro.Module.Image.Service
 {
@@ -16,43 +16,69 @@ namespace Picro.Module.Image.Service
     {
         private readonly IImageStorageService _imageStorageService;
 
-        private readonly IImageUserMappingTableService _imageUserMappingTableService;
+        private readonly IImageUserMappingSqlService _imageUserMappingSqlService;
 
         private readonly IImageEventHub _imageEventHub;
 
         public ImageService(
             IImageStorageService imageStorageService,
-            IImageUserMappingTableService imageUserMappingTableService,
+            IImageUserMappingSqlService imageUserMappingSqlService,
             IImageEventHub imageEventHub)
         {
             _imageStorageService = imageStorageService;
-            _imageUserMappingTableService = imageUserMappingTableService;
+            _imageUserMappingSqlService = imageUserMappingSqlService;
             _imageEventHub = imageEventHub;
         }
 
-        public async Task<bool> UploadImage(User user, Stream imageStream)
+        public async Task<ImageInfo?> UploadImage(User user, Stream imageStream)
         {
+            var uploadTimestamp = DateTime.UtcNow;
             var imageIdentifier = Guid.NewGuid();
             var fileName = $"{user.Identifier}/{imageIdentifier}.png";
 
-            var (success, uri) = await _imageStorageService.UploadImage(user.Identifier, imageStream, fileName);
+            var (success, imageUri) = await _imageStorageService.UploadImage(user.Identifier, imageStream, fileName);
 
             if (!success)
             {
-                return false;
+                return null;
             }
 
-            var mappingEntrySuccess = await _imageUserMappingTableService.AddNewImageEntryForUser(user, imageIdentifier, uri!);
+            var mappingEntrySuccess = await _imageUserMappingSqlService.AddNewImageEntryForUser(user, imageIdentifier, imageUri!, uploadTimestamp);
 
             if (!mappingEntrySuccess)
             {
-                return false;
+                return null;
             }
 
             // Upload worked fine, now let's share the image around
-            _imageEventHub.ImageUploaded.RaiseFireAndForget(new ImageUploadedEvent(user, uri!));
+            _imageEventHub.ImageUploaded.RaiseFireAndForget(new ImageUploadedEvent(user, imageUri!, imageIdentifier));
 
-            return true;
+            return new ImageInfo(imageIdentifier, imageUri!, uploadTimestamp);
+        }
+
+        public Task<IEnumerable<ImageInfo>> GetAllImagesForUser(User user) =>
+            _imageUserMappingSqlService.GetAllImagesForUser(user);
+
+        public async Task<ImageDeletionErrorCode> DeleteImage(User user, Guid imageId)
+        {
+            var doesImageBelongToUser = await _imageUserMappingSqlService.DoesImageBelongToUser(user, imageId);
+
+            if (!doesImageBelongToUser)
+            {
+                return ImageDeletionErrorCode.InvalidAccount;
+            }
+
+            var fileName = $"{user.Identifier}/{imageId}.png";
+
+            if (await _imageStorageService.RemoveImage(fileName))
+            {
+                await _imageUserMappingSqlService.RemoveMapping(user, imageId);
+                return ImageDeletionErrorCode.Success;
+            }
+            else
+            {
+                return ImageDeletionErrorCode.UnspecifiedError;
+            }
         }
     }
 }

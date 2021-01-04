@@ -1,10 +1,9 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using MassTransit;
+﻿using MassTransit;
 using MassTransit.RabbitMqTransport;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Picro.Common.Utils.Retry;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Picro.Common.Eventing.Helper
 {
@@ -25,7 +24,7 @@ namespace Picro.Common.Eventing.Helper
 
                 await RetryStrategy.DoRetryExponential(() =>
                 {
-                    config.Host($"rabbitmq://rabbitmq");
+                    config.Host("rabbitmq://rabbitmq-picro");
                 }, retryCount =>
                 {
                     logger.LogInformation($"Retrying RabbitMQ setup for the {retryCount}# time");

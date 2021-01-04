@@ -12,14 +12,15 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - IdentificationCookieName=ClientIdent
       - CloudStorageAccountConnectionString=DefaultEndpointsProtocol=https;AccountName=picro;AccountKey=xIC2jeagC4ZnATIza8XRJL2DRimgPBK8Bgdl82KzGW3qo3KQirHLsAMb4SqV8lJnVL1FXsuLOw6asQGnfjHmCQ==;EndpointSuffix=core.windows.net
+      - SqlConnectionString=Server=tcp:picro.database.windows.net,1433;Initial Catalog=picro;Persist Security Info=False;User ID=picroadmin;Password=FOyb2zgcdUJGXDDUPCzP;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
     ports:
       - 1442:443
 
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: docker.io/library/rabbitmq:3.8.6-management
+  rabbitmq-picro:
+    container_name: rabbitmq-picro
+    image: docker.io/library/rabbitmq:3.8.9-management
     labels:
       - picrocompose
     ports:
-      - "12643:15672"
+      - "12644:15672"

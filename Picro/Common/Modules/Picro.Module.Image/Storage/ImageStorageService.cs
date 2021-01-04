@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Azure;
+﻿using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Picro.Common.Utils.Async;
 using Picro.Module.Image.DataTypes;
 using Picro.Module.Image.Storage.Interface;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Picro.Module.Image.Storage
 {
@@ -49,6 +49,15 @@ namespace Picro.Module.Image.Storage
                 _logger.LogError(e, "Upload of image failed");
                 return new ImageUploadInfo(false, null);
             }
+        }
+
+        public async Task<bool> RemoveImage(string fileName)
+        {
+            var containerClient = await _blobContainerClient;
+
+            var response = await containerClient.DeleteBlobIfExistsAsync(fileName);
+
+            return response.Value;
         }
     }
 }
