@@ -8,4 +8,4 @@
 		<PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
 	</ItemGroup>
-		</Project>
+</Project>

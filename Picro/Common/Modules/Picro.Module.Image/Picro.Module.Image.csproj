@@ -14,6 +14,7 @@
 		<ProjectReference Include="..\..\Picro.Common.Eventing\Picro.Common.Eventing.csproj" />
 		<ProjectReference Include="..\..\Picro.Common.Storage\Picro.Common.Storage.csproj" />
 		<ProjectReference Include="..\..\Picro.Common\Picro.Common.csproj" />
-		<ProjectReference Include="..\Picro.Module.Identity\Picro.Module.Identity.csproj" />
+		<ProjectReference Include="..\Picro.Module.User\Picro.Module.User.csproj" />
+		<ProjectReference Include="..\Picro.Module.Notification\Picro.Module.Notification.csproj" />
 	</ItemGroup>
 		</Project>

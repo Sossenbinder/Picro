@@ -11,6 +11,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Modules\Picro.Module.Identity\Picro.Module.Identity.csproj" />
+		<ProjectReference Include="..\Modules\Picro.Module.User\Picro.Module.User.csproj" />
 	</ItemGroup>
 </Project>

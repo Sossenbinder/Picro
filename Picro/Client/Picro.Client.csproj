@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Common\Modules\Picro.Module.Image\Picro.Module.Image.csproj" />
+		<ProjectReference Include="..\Common\Modules\Picro.Module.Notification\Picro.Module.Notification.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common.Web\Picro.Common.Web.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common\Picro.Common.csproj" />
 	</ItemGroup>

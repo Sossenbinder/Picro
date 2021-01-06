@@ -11,7 +11,7 @@ COPY ["Picro/Server/Picro.Server.csproj", "Picro/Server/"]
 COPY ["Picro/Client/Picro.Client.csproj", "Picro/Client/"]
 COPY ["Picro/Common/Picro.Common/Picro.Common.csproj", "Picro/Common/Picro.Common/"]
 COPY ["Picro/Common/Picro.Common.Web/Picro.Common.Web.csproj", "Picro/Common/Picro.Common.Web/"]
-COPY ["Picro/Common/Modules/Picro.Module.Identity/Picro.Module.Identity.csproj", "Picro/Common/Modules/Picro.Module.Identity/"]
+COPY ["Picro/Common/Modules/Picro.Module.User/Picro.Module.User.csproj", "Picro/Common/Modules/Picro.Module.User/"]
 RUN dotnet restore "Picro/Server/Picro.Server.csproj"
 COPY . .
 WORKDIR "/src/Picro/Server"

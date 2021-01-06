@@ -26,8 +26,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Client\Picro.Client.csproj" />
-		<ProjectReference Include="..\Common\Modules\Picro.Module.Identity\Picro.Module.Identity.csproj" />
+		<ProjectReference Include="..\Common\Modules\Picro.Module.Connection\Picro.Module.Connection.csproj" />
+		<ProjectReference Include="..\Common\Modules\Picro.Module.User\Picro.Module.User.csproj" />
 		<ProjectReference Include="..\Common\Modules\Picro.Module.Image\Picro.Module.Image.csproj" />
+		<ProjectReference Include="..\Common\Modules\Picro.Module.Notification\Picro.Module.Notification.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common.Eventing\Picro.Common.Eventing.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common.SignalR\Picro.Common.SignalR.csproj" />
 		<ProjectReference Include="..\Common\Picro.Common.Storage\Picro.Common.Storage.csproj" />

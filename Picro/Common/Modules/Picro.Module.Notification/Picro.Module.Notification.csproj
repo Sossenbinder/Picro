@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Autofac" Version="6.1.0" />
+		<PackageReference Include="WebPush" Version="1.0.11" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Picro.Common.Eventing\Picro.Common.Eventing.csproj" />
+		<ProjectReference Include="..\Picro.Module.User\Picro.Module.User.csproj" />
+	</ItemGroup>
+		</Project>

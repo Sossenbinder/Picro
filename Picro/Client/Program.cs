@@ -71,6 +71,10 @@ namespace Picro.Client
             builder.RegisterType<DistributedImageService>()
                 .As<IDistributedImageService>()
                 .SingleInstance();
+
+            builder.RegisterType<NotificationsService>()
+                .As<INotificationsService>()
+                .SingleInstance();
         }
 
         private static IDictionary<string, string> GenerateConfigs()
