@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Picro.Module.User.DataTypes
+﻿namespace Picro.Module.User.DataTypes
 {
-	public class ConnectionInformation
-	{
-
-	}
+    public class ConnectionInformation
+    {
+        public NotificationSubscription? NotificationSubscription { get; set; }
+    }
 }

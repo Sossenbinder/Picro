@@ -1,38 +1,41 @@
-﻿using System.Threading.Tasks;
-using Picro.Common.Eventing.Helper;
+﻿using System;
+using System.Threading.Tasks;
 using Picro.Common.Eventing.Notifications;
 using Picro.Module.User.DataTypes;
-using Picro.Module.Notification.DataTypes;
 using Picro.Module.Notification.Service.Interface;
-using Picro.Module.Notification.Storage.Interface;
+using Picro.Module.User.Service.Interface;
 
 namespace Picro.Module.Notification.Service
 {
-	public class NotificationService : INotificationService
-	{
-		private readonly INotificationSubscriptionRepository _notificationSubscriptionRepository;
+    public class NotificationService : INotificationService
+    {
+        private readonly IUserService _userService;
 
-		private readonly IWebPushService _webPushService;
+        private readonly IWebPushService _webPushService;
 
-		public NotificationService(
-			INotificationSubscriptionRepository notificationSubscriptionRepository,
-			IWebPushService webPushService)
-		{
-			_notificationSubscriptionRepository = notificationSubscriptionRepository;
-			_webPushService = webPushService;
-		}
+        public NotificationService(
+            IUserService userService,
+            IWebPushService webPushService)
+        {
+            _userService = userService;
+            _webPushService = webPushService;
+        }
 
-		public Task<bool> RegisterUserForNotifications(User user, NotificationSubscription subscription)
-		{
-			return _notificationSubscriptionRepository.InsertNotificationSubscription(user, subscription);
-		}
+        public Task<bool> RegisterUserForNotifications(PicroUser user, NotificationSubscription subscription)
+        {
+            return _userService.UpdateNotificationSubscription(user, subscription);
+        }
 
-		public async Task SendNotificationToSession(User user)
-		{
-			var subscription = await _notificationSubscriptionRepository.GetNotificationSubscription(user);
+        public async Task SendNotificationToSession<T>(PicroUser user, FrontendNotification<T> notification)
+        {
+            var subscription = user.ConnectionInformation?.NotificationSubscription;
 
-			await _webPushService.SendNotificationToSession(subscription,
-				FrontendNotificationFactory.Create<string>("Bla", NotificationType.ImageShared));
-		}
-	}
+            if (subscription == null)
+            {
+                throw new ArgumentException("User doesn't have a subscription");
+            }
+
+            await _webPushService.SendNotificationToSession(subscription, notification);
+        }
+    }
 }

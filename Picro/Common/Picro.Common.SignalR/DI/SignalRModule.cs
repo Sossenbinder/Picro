@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using Picro.Common.SignalR.Caches;
-using Picro.Common.SignalR.Caches.Interface;
 
 namespace Picro.Common.SignalR.DI
 {
@@ -8,9 +6,6 @@ namespace Picro.Common.SignalR.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<ConnectedGroupCache>()
-                .As<IConnectedGroupCache>()
-                .SingleInstance();
         }
     }
 }

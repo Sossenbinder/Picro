@@ -1,10 +1,10 @@
 ﻿using Autofac;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Picro.Module.Notification.Service;
 using Picro.Module.Notification.Service.Interface;
-using Picro.Module.Notification.Storage;
-using Picro.Module.Notification.Storage.Context;
-using Picro.Module.Notification.Storage.Interface;
+using Picro.Module.User.Storage;
+using Picro.Module.User.Storage.Interface;
+using WebPush;
 
 namespace Picro.Module.Notification.DI
 {
@@ -20,12 +20,20 @@ namespace Picro.Module.Notification.DI
                 .As<INotificationService>()
                 .SingleInstance();
 
-            builder.RegisterType<NotificationDbContextFactory>()
-                .As<IDbContextFactory<NotificationDbContext>>()
-                .SingleInstance();
-
             builder.RegisterType<NotificationSubscriptionRepository>()
                 .As<INotificationSubscriptionRepository>()
+                .SingleInstance();
+
+            builder.Register(ctx =>
+                {
+                    var configuration = ctx.Resolve<IConfiguration>();
+                    return new VapidDetails(configuration["VapidSubject"], configuration["VapidPublicKey"], configuration["VapidPrivateKey"]);
+                })
+                .As<VapidDetails>()
+                .SingleInstance();
+
+            builder.RegisterType<WebPushClient>()
+                .As<WebPushClient>()
                 .SingleInstance();
         }
     }

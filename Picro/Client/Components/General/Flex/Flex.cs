@@ -20,6 +20,9 @@ namespace Picro.Client.Components.General.Flex
         public Func<Task>? OnClick { get; init; }
 
         [Parameter]
+        public ElementReference Ref { get; set; }
+
+        [Parameter]
         public FlexDirection Direction { get; init; } = FlexDirection.Row;
 
         [Parameter]

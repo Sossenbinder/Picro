@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Picro.Common.Eventing.Notifications;
 using Picro.Module.User.DataTypes;
-using Picro.Module.Notification.DataTypes;
 
 namespace Picro.Module.Notification.Service.Interface
 {
-	public interface INotificationService
-	{
-		Task<bool> RegisterUserForNotifications(User user, NotificationSubscription subscription);
+    public interface INotificationService
+    {
+        Task<bool> RegisterUserForNotifications(PicroUser user, NotificationSubscription subscription);
 
-		Task SendNotificationToSession(User user);
-	}
+        Task SendNotificationToSession<T>(PicroUser user, FrontendNotification<T> notification);
+    }
 }

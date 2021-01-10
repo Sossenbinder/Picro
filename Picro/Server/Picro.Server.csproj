@@ -11,7 +11,12 @@
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="6.1.0" />
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.0" />
+		<PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.0.2" />
+		<PackageReference Include="Azure.Identity" Version="1.3.0" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.7.0" />
+		<PackageReference Include="Hangfire" Version="1.7.18" />
+		<PackageReference Include="Hangfire.PostgreSql" Version="1.8.1" />
 		<PackageReference Include="MassTransit" Version="7.1.1" />
 		<PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.1" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="7.1.1" />
@@ -26,7 +31,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Client\Picro.Client.csproj" />
-		<ProjectReference Include="..\Common\Modules\Picro.Module.Connection\Picro.Module.Connection.csproj" />
 		<ProjectReference Include="..\Common\Modules\Picro.Module.User\Picro.Module.User.csproj" />
 		<ProjectReference Include="..\Common\Modules\Picro.Module.Image\Picro.Module.Image.csproj" />
 		<ProjectReference Include="..\Common\Modules\Picro.Module.Notification\Picro.Module.Notification.csproj" />

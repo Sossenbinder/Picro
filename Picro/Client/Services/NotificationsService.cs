@@ -5,7 +5,8 @@ using Microsoft.JSInterop;
 using Picro.Client.Communication.Interface;
 using Picro.Client.Services.Interface;
 using Picro.Client.Utils;
-using Picro.Module.Notification.DataTypes;
+using Picro.Common.Eventing.Notifications;
+using Picro.Module.User.DataTypes;
 
 namespace Picro.Client.Services
 {

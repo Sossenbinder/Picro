@@ -18,146 +18,181 @@ using Picro.Common.Storage.DI;
 using Picro.Module.User.DI;
 using Picro.Module.Image.DI;
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using Picro.Module.Connection.DI;
+using Microsoft.AspNetCore.DataProtection;
 using Picro.Module.Notification.DI;
+using Azure.Identity;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Picro.Server.Filters;
 
 namespace Picro.Server
 {
-	public class Startup
-	{
-		private const string LocalCors = "LocalCors";
+    public class Startup
+    {
+        private const string LocalCors = "LocalCors";
 
-		private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public Startup(
-			IConfiguration configuration,
-			IWebHostEnvironment webHostEnvironment)
-		{
-			_webHostEnvironment = webHostEnvironment;
-			Configuration = configuration;
-		}
+        private bool IsDevelopmentEnvironment() => _webHostEnvironment.IsDevelopment();
 
-		public IConfiguration Configuration { get; }
+        public Startup(
+            IConfiguration configuration,
+            IWebHostEnvironment webHostEnvironment)
+        {
+            _webHostEnvironment = webHostEnvironment;
+            Configuration = configuration;
+        }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.AddControllersWithViews();
-			services.AddRazorPages();
-			services.AddSignalR();
+        public IConfiguration Configuration { get; }
 
-			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-				.AddCookie(options =>
-				{
-					options.Events.OnRedirectToLogin = context =>
-					{
-						context.Response.StatusCode = 401;
-						return Task.CompletedTask;
-					};
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+            services.AddSignalR();
 
-					options.ExpireTimeSpan = TimeSpan.FromDays(100 * 365);
-					options.Cookie.HttpOnly = true;
-					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-					options.Cookie.MaxAge = TimeSpan.FromDays(100 * 365);
-					options.Cookie.SameSite = _webHostEnvironment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
-					options.Cookie.Name = Configuration["IdentificationCookieName"];
-				});
+            services.AddHangfire(config =>
+            {
+                config
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UsePostgreSqlStorage(Configuration["HangfirePostgresConnectionString"]);
+            });
+            services.AddHangfireServer();
 
-			services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
-			services.AddAntiforgery(x => x.HeaderName = "AntiForgery");
-			services.AddResponseCompression();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Events.OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
 
-			ConfigureMassTransit(services);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(100 * 365);
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.MaxAge = TimeSpan.FromDays(100 * 365);
+                    options.Cookie.SameSite = IsDevelopmentEnvironment() ? SameSiteMode.None : SameSiteMode.Strict;
+                    options.Cookie.Name = Configuration["IdentificationCookieName"];
+                });
 
-			if (_webHostEnvironment.IsDevelopment())
-			{
-				services.AddCors(corsOption =>
-				{
-					corsOption.AddPolicy(LocalCors,
-						builder =>
-						{
-							builder
-								.WithOrigins("https://localhost:5001")
-								.AllowAnyHeader()
-								.WithMethods(HttpMethods.Get, HttpMethods.Post, HttpMethods.Delete)
-								.AllowCredentials();
-						}
-					);
-				});
-			}
-		}
+            services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
+            services.AddAntiforgery(x => x.HeaderName = "AntiForgery");
+            services.AddResponseCompression();
 
-		private static void ConfigureMassTransit(IServiceCollection services)
-		{
-			services.AddSignalR();
+            if (IsDevelopmentEnvironment())
+            {
+                services.AddDataProtection()
+                    .SetApplicationName("Picro")
+                    .PersistKeysToFileSystem(new DirectoryInfo("/keys/storage"));
+            }
+            else
+            {
+                services.AddDataProtection()
+                    .PersistKeysToAzureBlobStorage(Configuration["CloudStorageAccountConnectionString"], "dataprotection", "keys")
+                    .ProtectKeysWithAzureKeyVault(new Uri("https://picro.vault.azure.net/"), new DefaultAzureCredential());
+            }
 
-			// creating the bus config
-			services.AddMassTransit(x =>
-			{
-				x.AddSignalRHub<SessionHub>();
+            ConfigureMassTransit(services);
 
-				x.AddBus(registrationContext => MassTransitBusFactory.CreateBus(registrationContext.GetService<ILogger<Startup>>(), cfg =>
-				{
-					cfg.ConfigureEndpoints(registrationContext);
-				}));
-			});
-		}
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                services.AddCors(corsOption =>
+                {
+                    corsOption.AddPolicy(LocalCors,
+                        builder =>
+                        {
+                            builder
+                                .WithOrigins("https://localhost:5001")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+                        }
+                    );
+                });
+            }
+        }
 
-		// ReSharper disable once UnusedMember.Global
-		public void ConfigureContainer(ContainerBuilder builder)
-		{
-			builder.RegisterModule<IdentityModule>();
-			builder.RegisterModule<StorageModule>();
-			builder.RegisterModule<ImageModule>();
-			builder.RegisterModule<EventingModule>();
-			builder.RegisterModule<SignalRModule>();
-			builder.RegisterModule<WebPushModule>();
-			builder.RegisterModule<ConnectionModule>();
-		}
+        private static void ConfigureMassTransit(IServiceCollection services)
+        {
+            services.AddSignalR();
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
+            // creating the bus config
+            services.AddMassTransit(x =>
+            {
+                x.AddSignalRHub<SessionHub>();
 
-				if (_webHostEnvironment.IsDevelopment())
-				{
-					app.UseWebAssemblyDebugging();
-					app.UseCors(LocalCors);
-				}
-			}
-			else
-			{
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-				app.UseHsts();
-			}
+                x.AddBus(registrationContext => MassTransitBusFactory.CreateBus(registrationContext.GetService<ILogger<Startup>>(), cfg =>
+                {
+                    cfg.ConfigureEndpoints(registrationContext);
+                }));
+            });
+        }
 
-			app.UseHttpsRedirection();
-			app.UseBlazorFrameworkFiles();
-			app.UseStaticFiles();
+        // ReSharper disable once UnusedMember.Global
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule<IdentityModule>();
+            builder.RegisterModule<StorageModule>();
+            builder.RegisterModule<ImageModule>();
+            builder.RegisterModule<EventingModule>();
+            builder.RegisterModule<SignalRModule>();
+            builder.RegisterModule<WebPushModule>();
+        }
 
-			app.UseRouting();
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
 
-			app.UseCookiePolicy();
-			app.UseAuthentication();
-			app.UseAuthorization();
+                if (_webHostEnvironment.IsDevelopment())
+                {
+                    app.UseWebAssemblyDebugging();
+                    app.UseCors(LocalCors);
+                }
+            }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapRazorPages();
-				endpoints.MapControllers();
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
 
-				// Route to serve blazor app
-				//endpoints.MapFallbackToFile("index.html");
+            app.UseRouting();
 
-				endpoints.MapHub<SessionHub>("/SessionHub");
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-				endpoints.MapFallbackToFile("index.html");
-			});
-		}
-	}
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                Authorization = new[] { new DashboardAuthFilter() }
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
+
+                // Route to serve blazor app
+                //endpoints.MapFallbackToFile("index.html");
+
+                endpoints.MapHub<SessionHub>("/SessionHub");
+
+                endpoints.MapFallbackToFile("index.html");
+                endpoints.MapHangfireDashboard();
+            });
+        }
+    }
 }

@@ -5,26 +5,27 @@ using Picro.Common.Extensions;
 
 namespace Picro.Common.Utils.Tasks
 {
-    public static class FireAndForgetTask
+    public class FireAndForgetTask
     {
+        public Task UnderlyingTask { get; init; }
+
+        private FireAndForgetTask(Task underlyingTask)
+        {
+            UnderlyingTask = underlyingTask;
+        }
+
         /// <summary>
         /// Raises a fire and forget task
         /// </summary>
         /// <param name="taskGenerator"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static async Task Run(
+        public static FireAndForgetTask Run(
             Func<Task> taskGenerator,
-            ILogger logger)
+            ILogger? logger)
         {
-            try
-            {
-                await taskGenerator();
-            }
-            catch (Exception e)
-            {
-                logger.LogException(e);
-            }
+            var task = RunInternal(taskGenerator, logger);
+            return new FireAndForgetTask(task);
         }
 
         /// <summary>
@@ -33,17 +34,25 @@ namespace Picro.Common.Utils.Tasks
         /// <param name="taskGenerator"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static async Task RunThreadPool(
+        public static FireAndForgetTask RunThreadPool(
             Func<Task> taskGenerator,
-            ILogger logger)
+            ILogger? logger)
+        {
+            var task = Task.Run(() => RunInternal(taskGenerator, logger));
+            return new FireAndForgetTask(task);
+        }
+
+        private static async Task RunInternal(
+            Func<Task> taskGenerator,
+            ILogger? logger)
         {
             try
             {
-                await Task.Run(taskGenerator);
+                await taskGenerator();
             }
             catch (Exception e)
             {
-                logger.LogException(e);
+                logger?.LogException(e);
             }
         }
     }

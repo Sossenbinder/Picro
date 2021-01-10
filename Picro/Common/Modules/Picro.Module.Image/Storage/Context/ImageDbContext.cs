@@ -4,20 +4,22 @@ using Picro.Module.Image.DataTypes.Entity;
 
 namespace Picro.Module.Image.Storage.Context
 {
-    public class ImageContext : DbContext
+    public class ImageDbContext : DbContext
     {
         private readonly string _connectionString;
 
-        public DbSet<ImageUserMappingEntity> ImageUserMapping { get; set; } = null!;
+        public DbSet<UploadedImageInfoEntity> ImageUserMappings { get; set; } = null!;
 
-        public ImageContext(string connectionString)
+        public DbSet<ImageDistributionMappingEntity> ImageDistributionMappings { get; set; } = null!;
+
+        public ImageDbContext(string connectionString)
         {
             _connectionString = connectionString;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ImageUserMappingEntity>().HasKey(x => new
+            modelBuilder.Entity<ImageDistributionMappingEntity>().HasKey(x => new
             {
                 x.UserId,
                 x.ImageId
@@ -30,7 +32,7 @@ namespace Picro.Module.Image.Storage.Context
         }
     }
 
-    public class ImageDbContextFactory : IDbContextFactory<ImageContext>
+    public class ImageDbContextFactory : IDbContextFactory<ImageDbContext>
     {
         private readonly string _connectionString;
 
@@ -39,6 +41,6 @@ namespace Picro.Module.Image.Storage.Context
             _connectionString = configuration["SqlConnectionString"];
         }
 
-        public ImageContext CreateDbContext() => new(_connectionString);
+        public ImageDbContext CreateDbContext() => new(_connectionString);
     }
 }

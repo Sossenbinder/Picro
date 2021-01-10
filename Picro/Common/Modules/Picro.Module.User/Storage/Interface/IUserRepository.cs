@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace Picro.Module.User.Storage.Interface
 {
-	public interface IUserRepository
-	{
-		Task<bool> InsertUser(User user);
+    public interface IUserRepository
+    {
+        Task<bool> InsertUser(PicroUser user);
 
-		Task<User?> FindUser(Guid clientId);
+        Task<PicroUser?> FindUser(Guid clientId);
 
-		Task<bool> UpdateUser(User user);
+        Task<bool> UpdateUser(PicroUser user);
 
-		Task<IEnumerable<User>> GetRandomUsers(Guid userIdToExcept, int amount = 5);
-	}
+        Task<IEnumerable<PicroUser>> GetRandomUsers(Guid userIdToExcept, int amount = 5);
+    }
 }

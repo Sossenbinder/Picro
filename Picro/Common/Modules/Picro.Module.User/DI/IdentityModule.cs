@@ -10,25 +10,29 @@ using Picro.Module.User.Storage.Interface;
 
 namespace Picro.Module.User.DI
 {
-	public class IdentityModule : Autofac.Module
-	{
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder.RegisterType<UserService>()
-				.As<IUserService>()
-				.SingleInstance();
+    public class IdentityModule : Autofac.Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<UserService>()
+                .As<IUserService>()
+                .SingleInstance();
 
-			builder.RegisterType<UserContextFactory>()
-				.As<IDbContextFactory<UserContext>>()
-				.SingleInstance();
+            builder.RegisterType<UserContextFactory>()
+                .As<IDbContextFactory<UserDbContext>>()
+                .SingleInstance();
 
-			builder.RegisterType<SqlUserStorageRepository>()
-				.As<IUserRepository>()
-				.SingleInstance();
+            builder.RegisterType<UserRepository>()
+                .As<IUserRepository>()
+                .SingleInstance();
 
-			builder.RegisterType<UserCache>()
-				.As<IUserCache>()
-				.SingleInstance();
-		}
-	}
+            builder.RegisterType<UserCache>()
+                .As<IUserCache>()
+                .SingleInstance();
+
+            builder.RegisterType<NotificationSubscriptionRepository>()
+                .As<INotificationSubscriptionRepository>()
+                .SingleInstance();
+        }
+    }
 }

@@ -8,12 +8,12 @@ using Picro.Module.Image.DataTypes.Enums;
 
 namespace Picro.Module.Image.Service.Interface
 {
-	public interface IImageService
-	{
-		Task<ImageInfo?> UploadImage(User user, Stream imageStream);
+    public interface IImageService
+    {
+        Task<ImageInfo?> UploadImage(PicroUser user, Stream imageStream);
 
-		Task<IEnumerable<ImageInfo>> GetAllImagesForUser(User user);
+        Task<IEnumerable<ImageInfo>> GetAllImagesForUser(PicroUser user);
 
-		Task<ImageDeletionErrorCode> DeleteImage(User user, Guid imageId);
-	}
+        Task<ImageDeletionErrorCode> DeleteImage(PicroUser user, Guid imageId);
+    }
 }

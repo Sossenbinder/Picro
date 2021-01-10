@@ -3,10 +3,10 @@ using System;
 
 namespace Picro.Module.User.Cache.Interface
 {
-	public interface IUserCache
-	{
-		void PutUser(User user);
+    public interface IUserCache
+    {
+        void PutUser(PicroUser user);
 
-		User? GetUser(Guid userId);
-	}
+        PicroUser? GetUser(Guid userId);
+    }
 }

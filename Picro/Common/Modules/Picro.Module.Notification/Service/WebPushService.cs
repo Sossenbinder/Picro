@@ -2,27 +2,33 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Picro.Common.Eventing.Notifications;
-using Picro.Module.Notification.DataTypes;
 using Picro.Module.Notification.Service.Interface;
+using Picro.Module.User.DataTypes;
 using WebPush;
 
 namespace Picro.Module.Notification.Service
 {
     public class WebPushService : IWebPushService
     {
-        public async Task SendNotificationToSession(NotificationSubscription subscription, FrontendNotification<string> notification)
-        {
-            // For a real application, generate your own
-            var publicKey = "BLC8GOevpcpjQiLkO7JmVClQjycvTCYWm6Cq_a7wJZlstGTVZvwGFFHMYfXt6Njyvgx_GlXJeo5cSiZ1y4JOx1o";
-            var privateKey = "OrubzSz3yWACscZXjFQrrtDwCKg-TGFuWhluQ2wLXDo";
+        private readonly WebPushClient _webPushClient;
 
+        private readonly VapidDetails _vapidDetails;
+
+        public WebPushService(
+            WebPushClient webPushClient,
+            VapidDetails vapidDetails)
+        {
+            _webPushClient = webPushClient;
+            _vapidDetails = vapidDetails;
+        }
+
+        public async Task SendNotificationToSession<T>(NotificationSubscription subscription, FrontendNotification<T> notification)
+        {
             var pushSubscription = new PushSubscription(subscription.Url, subscription.P256dh, subscription.Auth);
-            var vapidDetails = new VapidDetails("mailto:Stefan.Daniel.Schranz@t-online.de", publicKey, privateKey);
-            var webPushClient = new WebPushClient();
             try
             {
                 var payload = JsonConvert.SerializeObject(notification);
-                await webPushClient.SendNotificationAsync(pushSubscription, payload, vapidDetails);
+                await _webPushClient.SendNotificationAsync(pushSubscription, payload, _vapidDetails);
             }
             catch (Exception ex)
             {

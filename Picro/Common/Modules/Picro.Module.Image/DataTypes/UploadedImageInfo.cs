@@ -2,7 +2,7 @@
 
 namespace Picro.Module.Image.DataTypes
 {
-    public class ImageUserMapping
+    public class UploadedImageInfo
     {
         public Guid UserId { get; set; }
 

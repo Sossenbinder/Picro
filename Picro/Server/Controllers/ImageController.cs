@@ -10,65 +10,66 @@ using Picro.Module.Image.Utils;
 using Picro.Server.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hangfire;
 
 namespace Picro.Server.Controllers
 {
-	[ApiController]
-	[Route("[controller]")]
-	public class ImageController : SessionBaseController
-	{
-		private readonly IImageService _imageService;
+    [ApiController]
+    [Route("[controller]")]
+    public class ImageController : SessionBaseController
+    {
+        private readonly IImageService _imageService;
 
-		public ImageController(
-			IImageService imageService,
-			IUserService userService)
-			: base(userService)
-		{
-			_imageService = imageService;
-		}
+        public ImageController(
+            IImageService imageService,
+            IUserService userService)
+            : base(userService)
+        {
+            _imageService = imageService;
+        }
 
-		[HttpPost("Upload")]
-		[Authorize]
-		public async Task<JsonResponse<ImageUploadInfoResponse>> Upload(IFormFile? file)
-		{
-			if (file == null)
-			{
-				return JsonResponse.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.NoFile, null));
-			}
+        [HttpPost("Upload")]
+        [Authorize]
+        public async Task<JsonResponse<ImageUploadInfoResponse>> Upload(IFormFile? file)
+        {
+            if (file == null)
+            {
+                return JsonResponse.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.NoFile, null));
+            }
 
-			var fileName = GetFileNameExtensions(file.FileName);
+            var fileName = GetFileNameExtensions(file.FileName);
 
-			if (!AllowedImageExtensions.ImageExtensions.Contains(fileName))
-			{
-				return JsonResponse<ImageUploadInfoResponse>.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.InvalidFileEnding, null));
-			}
+            if (!AllowedImageExtensions.ImageExtensions.Contains(fileName))
+            {
+                return JsonResponse<ImageUploadInfoResponse>.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.InvalidFileEnding, null));
+            }
 
-			await using var fileStream = file.OpenReadStream();
-			var imageInfo = await _imageService.UploadImage(User, fileStream);
+            await using var fileStream = file.OpenReadStream();
+            var imageInfo = await _imageService.UploadImage(User, fileStream);
 
-			return imageInfo != null
-				? JsonResponse.Success(new ImageUploadInfoResponse(ImageUploadErrorCode.Success, imageInfo))
-				: JsonResponse.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.UploadFailed, null)); ;
-		}
+            return imageInfo != null
+                ? JsonResponse.Success(new ImageUploadInfoResponse(ImageUploadErrorCode.Success, imageInfo))
+                : JsonResponse.Error(new ImageUploadInfoResponse(ImageUploadErrorCode.UploadFailed, null)); ;
+        }
 
-		[HttpGet("GetImages")]
-		[Authorize]
-		public async Task<JsonResponse<IEnumerable<ImageInfo>>> GetImages()
-		{
-			var imageInfos = await _imageService.GetAllImagesForUser(User);
+        [HttpGet("GetImages")]
+        [Authorize]
+        public async Task<JsonResponse<IEnumerable<ImageInfo>>> GetImages()
+        {
+            var imageInfos = await _imageService.GetAllImagesForUser(User);
 
-			return JsonResponse<IEnumerable<ImageInfo>>.Success(imageInfos);
-		}
+            return JsonResponse<IEnumerable<ImageInfo>>.Success(imageInfos);
+        }
 
-		[HttpDelete("DeleteImage")]
-		[Authorize]
-		public async Task<JsonResponse<ImageDeletionErrorCode>> DeleteImage(Guid imageId)
-		{
-			var result = await _imageService.DeleteImage(User, imageId);
+        [HttpDelete("DeleteImage")]
+        [Authorize]
+        public async Task<JsonResponse<ImageDeletionErrorCode>> DeleteImage(Guid imageId)
+        {
+            var result = await _imageService.DeleteImage(User, imageId);
 
-			return result == ImageDeletionErrorCode.Success ? JsonResponse.Success(ImageDeletionErrorCode.Success) : JsonResponse.Error(result);
-		}
+            return result == ImageDeletionErrorCode.Success ? JsonResponse.Success(ImageDeletionErrorCode.Success) : JsonResponse.Error(result);
+        }
 
-		private static string GetFileNameExtensions(string fileName) => fileName.Substring(fileName.LastIndexOf('.'));
-	}
+        private static string GetFileNameExtensions(string fileName) => fileName.Substring(fileName.LastIndexOf('.'));
+    }
 }

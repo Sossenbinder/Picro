@@ -1,6 +1,6 @@
 ﻿(function () {
     // Note: Replace with your own key pair before deploying
-    const applicationServerPublicKey = 'BLC8GOevpcpjQiLkO7JmVClQjycvTCYWm6Cq_a7wJZlstGTVZvwGFFHMYfXt6Njyvgx_GlXJeo5cSiZ1y4JOx1o';
+    const applicationServerPublicKey = 'BLXfJOjUknl_JijpS5xzTvvkcOlSytIX3Jwp_ztSPK1ujOVf8KeBnqaeriAvX5Y0Z0b9j88vKFi65OAQCmeI0qg';
 
     window.notification = {
         requestSubscription: async () => {
@@ -18,10 +18,20 @@
                     };
                 }
             }
-        }
+        },
+        showNotification: async (title) => {
+            const serviceWorker = await navigator.serviceWorker.getRegistration();
+            serviceWorker.showNotification('Blazing Pizza',
+                {
+                    body: "Blaaaa",
+                    icon: 'img/icon-512.png',
+                    vibrate: [100, 50, 100],
+                    data: { url: "localhost" }
+                });
+        },
     };
 
-    async function subscribe(worker) {
+    const subscribe = async (worker) => {
         try {
             return await worker.pushManager.subscribe({
                 userVisibleOnly: true,
@@ -33,7 +43,7 @@
             }
             throw error;
         }
-    }
+    };
 
     function arrayBufferToBase64(buffer) {
         // https://stackoverflow.com/a/9458996

@@ -26,18 +26,22 @@ namespace Picro.Module.Image.DI
                 .As<IImageStorageService>()
                 .SingleInstance();
 
-            builder.RegisterType<ImageUserMappingSqlService>()
-                .As<IImageUserMappingSqlService>()
+            builder.RegisterType<UploadedImageInfoRepository>()
+                .As<IUploadedImageInfoRepository>()
                 .SingleInstance();
 
             builder.RegisterType<ImageDbContextFactory>()
-                .As<IDbContextFactory<ImageContext>>()
+                .As<IDbContextFactory<ImageDbContext>>()
                 .SingleInstance();
 
             builder.RegisterType<ImageDistributionService>()
                 .As<IImageDistributionService>()
                 .SingleInstance()
                 .AutoActivate();
+
+            builder.RegisterType<ImageDistributionRepository>()
+                .As<IImageDistributionRepository>()
+                .SingleInstance();
         }
     }
 }

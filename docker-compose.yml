@@ -1,8 +1,13 @@
 version: '3.4'
 
+volumes:
+  picro_hangfire_postgres: {}
+
 services:
   picro.server:
     image: ${DOCKER_REGISTRY-}picroserver
+    depends_on:
+      - postgres-picro
     build:
       context: .
       dockerfile: Picro/Server/Dockerfile
@@ -13,8 +18,14 @@ services:
       - IdentificationCookieName=ClientIdent
       - CloudStorageAccountConnectionString=DefaultEndpointsProtocol=https;AccountName=picro;AccountKey=xIC2jeagC4ZnATIza8XRJL2DRimgPBK8Bgdl82KzGW3qo3KQirHLsAMb4SqV8lJnVL1FXsuLOw6asQGnfjHmCQ==;EndpointSuffix=core.windows.net
       - SqlConnectionString=Server=tcp:picro.database.windows.net,1433;Initial Catalog=picro;Persist Security Info=False;User ID=picroadmin;Password=FOyb2zgcdUJGXDDUPCzP;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+      - VapidSubject=mailto:Stefan.Daniel.Schranz@t-online.de
+      - VapidPublicKey=BLXfJOjUknl_JijpS5xzTvvkcOlSytIX3Jwp_ztSPK1ujOVf8KeBnqaeriAvX5Y0Z0b9j88vKFi65OAQCmeI0qg
+      - VapidPrivateKey=1EKhNx5Licyrz71F3lo4OZ6GWluSzB9M55UEXHQra7U
+      - HangfirePostgresConnectionString=Server=postgres-picro;Port=5432;Database=hangfire;User Id=picro;Password=picro;
     ports:
       - 1442:443
+    volumes:
+      - ./Keys/Storage:/keys/storage
 
 
   rabbitmq-picro:
@@ -24,3 +35,30 @@ services:
       - picrocompose
     ports:
       - "12644:15672"
+
+
+  postgres-picro:
+    container_name: postgres-picro
+    image: postgres
+    labels:
+      - picrocompose
+    ports:
+      - "5432:5432"
+      - "8080:8080"
+    environment:
+      - POSTGRES_USER=picro
+      - POSTGRES_PASSWORD=picro
+    volumes:
+      - picro_hangfire_postgres:/var/lib/postgresql/data
+
+
+  postgres-admin-picro:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres-picro
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: stefan.daniel.schranz@t-online.de
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
