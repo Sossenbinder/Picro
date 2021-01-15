@@ -2,8 +2,8 @@
 
 namespace Picro.Client.Communication.Interface
 {
-    public interface ISessionService
-    {
-        Task InitializeSession();
-    }
+	public interface ISessionService
+	{
+		Task InitializeSession();
+	}
 }

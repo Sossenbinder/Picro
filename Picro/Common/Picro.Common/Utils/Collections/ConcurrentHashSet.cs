@@ -5,83 +5,83 @@ using System.Linq;
 
 namespace Picro.Common.Utils.Collections
 {
-    public class ConcurrentHashSet<T> : IEnumerable<T>
-    {
-        private readonly HashSet<T> _hashSet;
+	public class ConcurrentHashSet<T> : IEnumerable<T>
+	{
+		private readonly HashSet<T> _hashSet;
 
-        private readonly object _lock = new();
+		private readonly object _lock = new();
 
-        public ConcurrentHashSet()
-        {
-        }
+		public ConcurrentHashSet()
+		{
+		}
 
-        public ConcurrentHashSet(IEnumerable<T> collection)
-        {
-            _hashSet = collection.ToHashSet();
-        }
+		public ConcurrentHashSet(IEnumerable<T> collection)
+		{
+			_hashSet = collection.ToHashSet();
+		}
 
-        public int Count
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    return _hashSet.Count;
-                }
-            }
-        }
+		public int Count
+		{
+			get
+			{
+				lock (_lock)
+				{
+					return _hashSet.Count;
+				}
+			}
+		}
 
-        public bool Add(T item)
-        {
-            lock (_lock)
-            {
-                return _hashSet.Add(item);
-            }
-        }
+		public bool Add(T item)
+		{
+			lock (_lock)
+			{
+				return _hashSet.Add(item);
+			}
+		}
 
-        public void Clear()
-        {
-            lock (_lock)
-            {
-                _hashSet.Clear();
-            }
-        }
+		public void Clear()
+		{
+			lock (_lock)
+			{
+				_hashSet.Clear();
+			}
+		}
 
-        public bool Contains(T item)
-        {
-            lock (_lock)
-            {
-                return _hashSet.Contains(item);
-            }
-        }
+		public bool Contains(T item)
+		{
+			lock (_lock)
+			{
+				return _hashSet.Contains(item);
+			}
+		}
 
-        public bool Remove(T item)
-        {
-            lock (_lock)
-            {
-                return _hashSet.Remove(item);
-            }
-        }
+		public bool Remove(T item)
+		{
+			lock (_lock)
+			{
+				return _hashSet.Remove(item);
+			}
+		}
 
-        public int RemoveWhere(Predicate<T> predicate)
-        {
-            lock (_lock)
-            {
-                return _hashSet.RemoveWhere(predicate);
-            }
-        }
+		public int RemoveWhere(Predicate<T> predicate)
+		{
+			lock (_lock)
+			{
+				return _hashSet.RemoveWhere(predicate);
+			}
+		}
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            lock (_lock)
-            {
-                return _hashSet.GetEnumerator();
-            }
-        }
+		public IEnumerator<T> GetEnumerator()
+		{
+			lock (_lock)
+			{
+				return _hashSet.GetEnumerator();
+			}
+		}
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+	}
 }

@@ -1,0 +1,8 @@
+.NavigationButton {
+  display: grid;
+  place-items: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 30px;
+  box-shadow: 0px 0px 5px 2px grey;
+}

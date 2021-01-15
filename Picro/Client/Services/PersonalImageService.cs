@@ -1,80 +1,83 @@
-﻿using System;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using Picro.Client.Communication.Interface;
 using Picro.Client.Services.Interface;
 using Picro.Client.Utils;
 using Picro.Common.Web.Extensions;
+using Picro.Module.Image.DataTypes.Enums;
 using Picro.Module.Image.DataTypes.Response;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Picro.Module.Image.DataTypes.Enums;
 
 namespace Picro.Client.Services
 {
-    internal class PersonalImageService : IPersonalImageService
-    {
-        private readonly HttpClient _httpClient;
+	internal class PersonalImageService : IPersonalImageService
+	{
+		private readonly HttpClient _httpClient;
 
-        private readonly IRequestMessageFactory _requestMessageFactory;
+		private readonly IRequestMessageFactory _requestMessageFactory;
 
-        public PersonalImageService(
-            IHttpClientFactory httpClientFactory,
-            IRequestMessageFactory requestMessageFactory)
-        {
-            _requestMessageFactory = requestMessageFactory;
-            _httpClient = httpClientFactory.CreateClient(HttpClients.PicroBackend);
-        }
+		public PersonalImageService(
+			IHttpClientFactory httpClientFactory,
+			IRequestMessageFactory requestMessageFactory)
+		{
+			_requestMessageFactory = requestMessageFactory;
+			_httpClient = httpClientFactory.CreateClient(HttpClients.PicroBackend);
+		}
 
-        public async Task<IEnumerable<ImageInfo>> GetImages()
-        {
-            var requestMessage = _requestMessageFactory.Create(HttpMethod.Get, "/Image/GetImages");
+		public async Task<IEnumerable<ImageInfo>> GetUploadedImages()
+		{
+			var requestMessage = _requestMessageFactory.Create(HttpMethod.Get, "/Image/GetUploadedImages");
 
-            var response = await _httpClient.SendAsync(requestMessage);
+			var response = await _httpClient.SendAsync(requestMessage);
 
-            var jsonResponse = await response.GetJsonResponse<IEnumerable<ImageInfo>>();
+			var jsonResponse = await response.GetJsonResponse<IEnumerable<ImageInfo>>();
 
-            if (response.IsSuccessStatusCode && jsonResponse.Success)
-            {
-                return jsonResponse.Data!;
-            }
+			if (response.IsSuccessStatusCode && jsonResponse.Success)
+			{
+				return jsonResponse
+					.Data!
+					.Select(x => x with { UploadTimeStamp = x.UploadTimeStamp.ToLocalTime() });
+			}
 
-            return new List<ImageInfo>();
-        }
+			return new List<ImageInfo>();
+		}
 
-        public async Task<ImageInfo?> UploadImage(IBrowserFile browserFile)
-        {
-            var requestMessage = _requestMessageFactory.Create(HttpMethod.Post, "/Image/Upload");
+		public async Task<ImageInfo?> UploadImage(IBrowserFile browserFile)
+		{
+			var requestMessage = _requestMessageFactory.Create(HttpMethod.Post, "/Image/Upload");
 
-            using var sc = new StreamContent(browserFile.OpenReadStream(4096000));
+			using var sc = new StreamContent(browserFile.OpenReadStream(4096000));
 
-            var formData = new MultipartFormDataContent
-            {
-                { sc, "file", browserFile.Name }
-            };
+			var formData = new MultipartFormDataContent
+			{
+				{ sc, "file", browserFile.Name }
+			};
 
-            requestMessage.Content = formData;
+			requestMessage.Content = formData;
 
-            var response = await _httpClient.SendAsync(requestMessage);
+			var response = await _httpClient.SendAsync(requestMessage);
 
-            var jsonResponse = await response.GetJsonResponse<ImageUploadInfoResponse>();
+			var jsonResponse = await response.GetJsonResponse<ImageUploadInfoResponse>();
 
-            if (response.IsSuccessStatusCode && jsonResponse.Success)
-            {
-                return jsonResponse.Data!.ImageInfo;
-            }
+			if (response.IsSuccessStatusCode && jsonResponse.Success)
+			{
+				return jsonResponse.Data!.ImageInfo;
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-        public async Task<ImageDeletionErrorCode> DeleteImage(Guid imageId)
-        {
-            var requestMessage = _requestMessageFactory.Create(HttpMethod.Delete, $"/Image/DeleteImage?{nameof(imageId)}={imageId}");
+		public async Task<ImageDeletionErrorCode> DeleteImage(Guid imageId)
+		{
+			var requestMessage = _requestMessageFactory.Create(HttpMethod.Delete, $"/Image/DeleteImage?{nameof(imageId)}={imageId}");
 
-            var response = await _httpClient.SendAsync(requestMessage);
-            var jsonResponse = await response.GetJsonResponse<ImageDeletionErrorCode>();
+			var response = await _httpClient.SendAsync(requestMessage);
+			var jsonResponse = await response.GetJsonResponse<ImageDeletionErrorCode>();
 
-            return jsonResponse.Data;
-        }
-    }
+			return jsonResponse.Data;
+		}
+	}
 }

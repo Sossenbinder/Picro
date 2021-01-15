@@ -1,0 +1,8 @@
+.Container {
+  height: 100%;
+  width: 100%;
+}
+.Container ::deep .ImageReactionHub {
+  height: 100%;
+  width: 100%;
+}

@@ -1,0 +1,8 @@
+﻿@using Picro.Client.Components.General.Flex.Enums
+<div class="Container">
+	<Flex Class="ImageShareCenter"
+		  Direction="FlexDirection.Column">
+		<ImageCarousel SetCurrentImage="@OnCurrentImageShareChanged" />
+		<ImageReactionHub ImageId="@_currentImage?.ImageId" />
+	</Flex>
+</div>

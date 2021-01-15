@@ -43,10 +43,11 @@ namespace Picro.Module.Image.Storage
             await using var ctx = _contextFactory.CreateDbContext();
 
             var imageMappings = await ctx.ImageUserMappings
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Identifier)
                 .ToListAsync();
 
-            return imageMappings.Select(x => new ImageInfo(x.ImageId, x.ImageLink, DateTime.UtcNow));
+            return imageMappings.Select(x => new ImageInfo(x.ImageId, x.ImageLink, x.UploadTimeStamp));
         }
 
         public async Task<bool> DoesImageBelongToUser(PicroUser user, Guid imageIdentifier)

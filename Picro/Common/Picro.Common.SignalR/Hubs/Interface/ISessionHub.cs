@@ -1,6 +1,6 @@
 ﻿namespace Picro.Common.SignalR.Hubs.Interface
 {
-    public interface ISessionHub
-    {
-    }
+	public interface ISessionHub
+	{
+	}
 }

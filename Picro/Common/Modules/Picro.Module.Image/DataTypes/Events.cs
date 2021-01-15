@@ -3,5 +3,5 @@ using Picro.Module.User.DataTypes;
 
 namespace Picro.Module.Image.DataTypes
 {
-    public record ImageUploadedEvent(PicroUser Uploader, string ImageUri, Guid ImageId);
+	public record ImageUploadedEvent(PicroUser Uploader, string ImageUri, Guid ImageId);
 }

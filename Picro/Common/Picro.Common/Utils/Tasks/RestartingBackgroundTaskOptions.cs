@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Picro.Common.Utils.Tasks
 {
-    public struct RestartingBackgroundTaskOptions
-    {
-        public string Name { get; set; }
+	public struct RestartingBackgroundTaskOptions
+	{
+		public string Name { get; set; }
 
-        public CancellationToken? CancellationToken { get; set; }
+		public CancellationToken? CancellationToken { get; set; }
 
-        public Func<Exception, Task> OnException { get; set; }
-    }
+		public Func<Exception, Task> OnException { get; set; }
+	}
 }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Picro.Client.Extensions
+﻿namespace Picro.Client.Extensions
 {
-    public class WebAssemblyHostBuilderExtensions
-    {
-        
-    }
+	public class WebAssemblyHostBuilderExtensions
+	{
+	}
 }

@@ -9,6 +9,9 @@
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="6.1.0" />
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+		<PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
+		<PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
+		<PackageReference Include="Blazorise.Icons.Material" Version="0.9.2.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.1" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.1" />
@@ -27,4 +30,4 @@
 	<ItemGroup>
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
-</Project>
+		</Project>

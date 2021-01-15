@@ -1,75 +1,99 @@
-﻿@using Picro.Client.Components.General.Flex.Enums
+﻿@using Picro.Client.Utils
+@using Blazorise.Icons.Material
+@using Picro.Client.Components.General.Flex.Enums
 @using Picro.Client.Extensions
-@using Picro.Client.Utils
-
 <div id="BurgerMenu" class="BurgerMenu">
-    @if (!_isOpened)
-    {
-    <i @onclick=@HandleMenuButtonClick class="material-icons MenuIcon">menu</i>
-    }
-    <Flex Id="MenuContainer"
-          Class=@MenuContainerClass
-          Direction="FlexDirection.Column">
-        <i @onclick=@HandleMenuButtonClick class="material-icons MenuIconEmbedded">menu</i>
-        <Flex Class="LinkContainer"
-              Direction="FlexDirection.Column">
-            <NavLink @onclick=@HandleMenuButtonClick
-                     class="nav-link"
-                     href="/">
-                <i class="material-icons" aria-hidden="true">home</i>
-                Home
-            </NavLink>
-            <NavLink @onclick=@HandleMenuButtonClick
-                     class="nav-link" href="/Images/Overview">
-                <i class="material-icons" aria-hidden="true">image</i>
-                Images
-            </NavLink>
-        </Flex>
-    </Flex>
+	@if (!_isOpened)
+	{
+		<i @onclick=@ToggleBar class="material-icons MenuIcon">menu</i>
+	}
+	<Bar Mode="BarMode.VerticalInline"
+		 CollapseMode="BarCollapseMode.Hide"
+		 @ref="@_menuBar">
+		<BarBrand>
+			<Flex Class="BarBrand"
+				  Direction="FlexDirection.Column"
+				  MainAlign="FlexAlign.Center">
+				<span class="BrandName">
+					Picro
+				</span>
+				<i @onclick=@ToggleBar class="material-icons MenuIconEmbedded">menu</i>
+			</Flex>
+		</BarBrand>
+		<BarMenu>
+			<BarStart>
+				<BarItem>
+					<BarLink Clicked='() => OnNavLinkClicked("/")'>
+						<BarIcon IconName="MaterialIcons.Home" />
+						Home
+					</BarLink>
+				</BarItem>
+				<BarItem>
+					<BarLink Clicked='() => OnNavLinkClicked("/Images/Overview")'>
+						<BarIcon IconName="MaterialIcons.Image" />
+						Images
+					</BarLink>
+				</BarItem>
+			</BarStart>
+		</BarMenu>
+	</Bar>
 </div>
 
 @code
 {
-    [Inject]
-    public GlobalClickHandler GlobalClickHandler { get; set; }
+	[Inject]
+	public GlobalClickHandler GlobalClickHandler { get; set; } = null!;
 
-    [Inject]
-    private IJSRuntime _jsRuntime { get; set; }
+	[Inject]
+	private IJSRuntime JsRuntime { get; set; } = null!;
 
-    private string MenuContainerClass => $"MenuContainer {(_isOpened ? "Opened" : "Closed")}";
+	[Inject]
+	private NavigationManager NavManager { get; set; } = null!;
 
-    private bool _isOpened;
+	private BoundingRect _menuBoundingRect = null!;
 
-    private BoundingRect _boundingRect;
+	private Bar _menuBar = null!;
 
-    private int translateOnOpen = 160;
+	private bool _isOpened;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        GlobalClickHandler.OnClick += OnGlobalClick;
-        await InitBoundingRect();
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_menuBar.Visible = false;
+			StateHasChanged();
+			GlobalClickHandler.OnClick += OnGlobalClick;
+			await InitBoundingRect();
+		}
+	}
 
-    private void HandleMenuButtonClick(MouseEventArgs eventArgs)
-    {
-        _isOpened = !_isOpened;
-    }
+	private async Task InitBoundingRect()
+	{
+		var boundingRect = await JsRuntime.InvokeAsync<BoundingRect>("getComponentCoordinates", "BurgerMenu");
+		_menuBoundingRect = boundingRect;
+	}
 
-    private async Task InitBoundingRect()
-    {
-        var boundingRect = await _jsRuntime.InvokeAsync<BoundingRect>("getComponentCoordinates", "MenuContainer");
-        boundingRect.ShiftRight(160);
-        _boundingRect = boundingRect;
-    }
+	private void OnGlobalClick(object sender, MouseEventArgs eventArgs)
+	{
+		if (!_menuBar.Visible || _menuBoundingRect.IsWithinXBounds(eventArgs.OffsetX))
+		{
+			return;
+		}
 
-    private void OnGlobalClick(object sender, MouseEventArgs eventArgs)
-    {
-        if (!_isOpened || _boundingRect.IsWithinXBounds(eventArgs.OffsetX))
-        {
-            return;
-        }
+		_menuBar.Visible = false;
+		StateHasChanged();
+	}
 
-        _isOpened = false;
-        StateHasChanged();
-    }
+	private void OnNavLinkClicked(string destination)
+	{
+		NavManager.NavigateTo(destination);
+		_menuBar.Visible = false;
+		StateHasChanged();
+	}
+
+	private void ToggleBar()
+	{
+		_menuBar.Visible = !_menuBar.Visible;
+		StateHasChanged();
+	}
 }

@@ -1,8 +1,8 @@
 ﻿namespace Picro.Common.Eventing.Notifications
 {
-    public enum NotificationType
-    {
-        None,
-        ImageShared
-    }
+	public enum NotificationType
+	{
+		None,
+		ImageShared
+	}
 }

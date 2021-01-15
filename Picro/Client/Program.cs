@@ -1,10 +1,6 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Picro.Client.Communication;
@@ -12,78 +8,95 @@ using Picro.Client.Communication.Interface;
 using Picro.Client.Services;
 using Picro.Client.Services.Interface;
 using Picro.Client.Utils;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.Material;
 
 namespace Picro.Client
 {
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+	public class Program
+	{
+		public static async Task Main(string[] args)
+		{
+			var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            PopulateMsDiServices(builder.Services);
+			PopulateMsDiServices(builder.Services);
 
-            builder.Configuration.AddInMemoryCollection(GenerateConfigs());
-            builder.ConfigureContainer(new AutofacServiceProviderFactory(cb => PopulateContainer(builder, cb)));
+			builder.Configuration.AddInMemoryCollection(GenerateConfigs());
+			builder.ConfigureContainer(new AutofacServiceProviderFactory(cb => PopulateContainer(builder, cb)));
 
-            builder.RootComponents.Add<App>("#app");
+			builder.RootComponents.Add<App>("#app");
 
-            var builtHost = builder.Build();
+			var builtHost = builder.Build();
 
-            await builtHost.Services.GetRequiredService<ISessionService>().InitializeSession();
+			builtHost
+				.Services
+				.UseBootstrapProviders()
+				.UseMaterialIcons();
 
-            await builtHost.RunAsync();
-        }
+			await builtHost.Services.GetRequiredService<ISessionService>().InitializeSession();
 
-        private static void PopulateMsDiServices(IServiceCollection services)
-        {
-            services.AddHttpClient(HttpClients.PicroBackend, (ctx, client) =>
-            {
-                client.BaseAddress = new Uri(ctx.GetRequiredService<IConfiguration>()["RemoteEndpoint"]);
-            });
-        }
+			await builtHost.RunAsync();
+		}
 
-        private static void PopulateContainer(WebAssemblyHostBuilder wasmHostBuilder, ContainerBuilder builder)
-        {
-            builder.RegisterType<GlobalClickHandler>()
-                .AsSelf()
-                .SingleInstance();
+		private static void PopulateMsDiServices(IServiceCollection services)
+		{
+			services.AddHttpClient(HttpClients.PicroBackend, (ctx, client) =>
+			{
+				client.BaseAddress = new Uri(ctx.GetRequiredService<IConfiguration>()["RemoteEndpoint"]);
+			});
 
-            builder.RegisterInstance(new HttpClient { BaseAddress = new Uri(wasmHostBuilder.HostEnvironment.BaseAddress) })
-                .As<HttpClient>();
+			services
+				.AddBlazorise()
+				.AddBootstrapProviders()
+				.AddMaterialIcons();
+		}
 
-            builder.RegisterType<KeepAliveService>()
-                .As<IKeepAliveService>()
-                .SingleInstance();
+		private static void PopulateContainer(WebAssemblyHostBuilder wasmHostBuilder, ContainerBuilder builder)
+		{
+			builder.RegisterType<GlobalClickHandler>()
+				.AsSelf()
+				.SingleInstance();
 
-            builder.RegisterType<SessionService>()
-                .As<ISessionService>()
-                .SingleInstance();
+			builder.RegisterInstance(new HttpClient { BaseAddress = new Uri(wasmHostBuilder.HostEnvironment.BaseAddress) })
+				.As<HttpClient>();
 
-            builder.RegisterType<PersonalImageService>()
-                .As<IPersonalImageService>()
-                .SingleInstance();
+			builder.RegisterType<KeepAliveService>()
+				.As<IKeepAliveService>()
+				.SingleInstance();
 
-            builder.RegisterType<RequestMessageFactory>()
-                .As<IRequestMessageFactory>()
-                .SingleInstance();
+			builder.RegisterType<SessionService>()
+				.As<ISessionService>()
+				.SingleInstance();
 
-            builder.RegisterType<DistributedImageService>()
-                .As<IDistributedImageService>()
-                .SingleInstance();
+			builder.RegisterType<PersonalImageService>()
+				.As<IPersonalImageService>()
+				.SingleInstance();
 
-            builder.RegisterType<NotificationsService>()
-                .As<INotificationsService>()
-                .SingleInstance();
-        }
+			builder.RegisterType<RequestMessageFactory>()
+				.As<IRequestMessageFactory>()
+				.SingleInstance();
 
-        private static IDictionary<string, string> GenerateConfigs()
-        {
-            var dict = new Dictionary<string, string>();
+			builder.RegisterType<SharedImageService>()
+				.As<ISharedImageService>()
+				.SingleInstance();
 
-            dict.Add("RemoteEndpoint", "https://localhost:1442");
+			builder.RegisterType<NotificationsService>()
+				.As<INotificationsService>()
+				.SingleInstance();
+		}
 
-            return dict;
-        }
-    }
+		private static IDictionary<string, string> GenerateConfigs()
+		{
+			var dict = new Dictionary<string, string>();
+
+			dict.Add("RemoteEndpoint", "https://localhost:1442");
+
+			return dict;
+		}
+	}
 }

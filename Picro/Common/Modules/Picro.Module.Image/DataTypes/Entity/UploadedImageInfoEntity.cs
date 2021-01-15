@@ -9,13 +9,13 @@ namespace Picro.Module.Image.DataTypes.Entity
     public class UploadedImageInfoEntity
     {
         [Column("UserId")]
-        [Key]
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
 
         public UserEntity User { get; set; }
 
         [Column("ImageId")]
+        [Key]
         public Guid ImageId { get; set; }
 
         [Column("ImageLink")]

@@ -6,14 +6,16 @@ using Picro.Module.User.DataTypes;
 
 namespace Picro.Module.Image.Storage.Interface
 {
-    public interface IImageDistributionRepository
-    {
-        Task InsertMapping(Guid imageId, PicroUser user);
+	public interface IImageDistributionRepository
+	{
+		Task InsertMapping(Guid imageId, PicroUser user);
 
-        Task InsertMappings(Guid imageId, IEnumerable<PicroUser> users);
+		Task InsertMappings(Guid imageId, IEnumerable<PicroUser> users);
 
-        Task AcknowledgeReceival(Guid imageId, PicroUser user);
+		Task AcknowledgeReceival(Guid imageId, PicroUser user);
 
-        Task<IEnumerable<ImageDistributionMapping>> GetImageMappings(Guid imageId);
-    }
+		Task<IEnumerable<ImageDistributionMapping>> GetImageMappings(Guid imageId);
+
+		Task<IEnumerable<ImageDistributionMapping>> GetImageMappings(PicroUser user);
+	}
 }

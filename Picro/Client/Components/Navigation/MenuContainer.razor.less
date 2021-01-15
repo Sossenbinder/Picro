@@ -1,45 +1,44 @@
 ﻿// no-minify
 
 .MenuIconTemplate {
-    cursor: pointer;
-    font-size: 50px;
-    user-select: none;
-    height: 50px;
-    width: 50px;
+	cursor: pointer;
+	font-size: 50px;
+	user-select: none;
+	height: 50px;
+	width: 50px;
+	position: fixed;
+	font-size: 50px;
+	user-select: none;
 }
 
 .BurgerMenu {
-    height: 100%;
-    position: absolute;
-    left: 0px;
-    top: 0px;
+	height: 100%;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 100;
 
-    ::deep .MenuContainer {
-        height: 100%;
-        position: absolute;
-        left: -160px;
-        width: 150px;
-        border-right: 1px solid black;
-        transition: 0.5s ease-in-out transform;
-        background-color: white;
-        z-index: 100;
+	::deep .BarBrand {
+		position: relative;
+		width: 100%;
 
-        .MenuIconEmbedded {
-            .MenuIconTemplate();
-            position: relative;
-            top: 0px;
-            left: 0px;
-        }
+		.BrandName {
+			margin-left: 5px;
+			font-size: 35px;
+		}
 
-        &.Opened {
-            transform: translateX(160px);
-        }
-    }
-}
+		.MenuIconEmbedded {
+			.MenuIconTemplate();
+			position: absolute;
+			top: 0px;
+			right: 0px;
+		}
+	}
 
-.MenuIcon {
-    .MenuIconTemplate();
-    position: fixed;
-    font-size: 50px;
-    user-select: none;
+	.MenuIcon {
+		.MenuIconTemplate();
+		position: fixed;
+		font-size: 50px;
+		user-select: none;
+	}
 }

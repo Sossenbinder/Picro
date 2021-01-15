@@ -1,0 +1,27 @@
+﻿@using Picro.Client.Components.General.Flex.Enums
+@using Picro.Common.Extensions
+
+<div class="Container">
+	<Flex Class="ImageCarousel"
+		  Direction="FlexDirection.Column">
+		<Flex Class="CarouselContainer"
+			  MainAlign="FlexAlign.Center">
+			<div class="NavigationButtonContainer">
+				<NavigationButton Class="NavigationButtonContainer" Direction="NavigationDirection.Left"
+								  OnClick="@OnNavigationClick" />
+			</div>
+			@if (_currentImage?.Value != null)
+			{
+				<Flex Class="ImageContainer">
+					<Image Source="@((_lastDirection == NavigationDirection.Left ? CurrentImage.CircularPrev(_images) : CurrentImage.CircularNext(_images)).Value.ImageUrl)" />
+					<Image Source="@CurrentImage.Value.ImageUrl"
+						   Class="@($"{(_slideRunning ? ($"TempSlide {_lastDirection.ToString()}") : "")}")" />
+				</Flex>
+			}
+			<div class="NavigationButtonContainer">
+				<NavigationButton Direction="NavigationDirection.Right"
+								  OnClick="@OnNavigationClick" />
+			</div>
+		</Flex>
+	</Flex>
+</div>

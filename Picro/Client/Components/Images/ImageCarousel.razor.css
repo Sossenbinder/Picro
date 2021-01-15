@@ -1,0 +1,37 @@
+.Container {
+  height: 100%;
+  width: 100%;
+}
+.Container ::deep .ImageCarousel {
+  height: 100%;
+  width: 100%;
+}
+.Container ::deep .ImageCarousel .CarouselContainer {
+  height: 50%;
+  width: 100%;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .ImageContainer {
+  width: 75%;
+  position: relative;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .ImageContainer > img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .ImageContainer > img.TempSlide {
+  transition: .5s ease;
+  opacity: 0;
+  width: 0%;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .ImageContainer > img.TempSlide.Left {
+  left: 0px;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .ImageContainer > img.TempSlide.Right {
+  right: 0px;
+}
+.Container ::deep .ImageCarousel .CarouselContainer .NavigationButtonContainer {
+  display: grid;
+  margin: 5px;
+  place-items: center;
+}

@@ -2,28 +2,38 @@
 @using Picro.Client.Components.General.Flex.Enums
 
 <div class="Container">
-    <Flex Class="ImagePageGrid">
-        <Flex Class="ImageList"
-              Direction="FlexDirection.Column">
-            @foreach (var imageInfo in _uploadedImages)
-            {
-                <ImageEntry ImageInfo=@imageInfo
-                            OnImageDelete=@OnDeleteImage />
-            }
-        </Flex>
-        <Flex Class="ImageUploadSection"
-              MainAlign="FlexAlign.Center"
-              CrossAlign="FlexAlign.Center">
-            Take Picture
-        </Flex>
-        <Flex Class="ImageUploadSection"
-              MainAlign="FlexAlign.Center"
-              CrossAlign="FlexAlign.Center">
-            Upload existing picture
-            <InputFile OnChange=@OnInputFileChange
-                       accept=@_allowedImageExtensions>
-                Test
-            </InputFile>
-        </Flex>
-    </Flex>
+	<Flex Class="ImagePageGrid">
+		<Flex Class="ImageList"
+			  Direction="FlexDirection.Column">
+			@foreach (var imageInfo in _uploadedImages)
+			{
+				<ImageEntry ImageInfo=@imageInfo
+							OnImageDelete=@OnDeleteImage />
+			}
+		</Flex>
+		<Flex Class="ImageUploadSection"
+			  MainAlign="FlexAlign.Center"
+			  CrossAlign="FlexAlign.Center">
+			Take Picture
+		</Flex>
+		<Flex Class="ImageUploadSection"
+			  MainAlign="FlexAlign.Center"
+			  CrossAlign="FlexAlign.Center">
+			<InputFile OnChange=@OnInputFileChange
+					   accept=@_allowedImageExtensions />
+			Upload existing picture
+		</Flex>
+
+		@*<Carousel @bind-SelectedSlide="@selectedSlide">
+			<CarouselSlide Name="1">
+				<Image Source="https://gutta.lv/wp-content/uploads/2015/10/test-img.jpg" Text="City Skyline" Display="Display.Block" Style="width: 100%;" />
+			</CarouselSlide>
+			<CarouselSlide Name="2">
+				<Image Source="https://www.exclusive-networks.com/de/wp-content/uploads/sites/10/2019/06/test-image.jpg" Text="City Skyline" Display="Display.Block" Style="width: 100%;" />
+			</CarouselSlide>
+			<CarouselSlide Name="3">
+				<Image Source="https://i.redd.it/w3kr4m2fi3111.png" Text="City Skyline" Display="Display.Block" Style="width: 100%;" />
+			</CarouselSlide>
+		</Carousel>*@
+	</Flex>
 </div>

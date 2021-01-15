@@ -1,0 +1,47 @@
+﻿// no-minify
+
+.Container {
+	height: 100%;
+	width: 100%;
+
+	::deep .ImageCarousel {
+		height: 100%;
+		width: 100%;
+
+		.CarouselContainer {
+			height: 50%;
+			width: 100%;
+
+			.ImageContainer {
+				width: 75%;
+				position: relative;
+
+				> img {
+					position: absolute;
+					height: 100%;
+					width: 100%;
+				}
+
+				> img.TempSlide {
+					transition: .5s ease;
+					opacity: 0;
+					width: 0%;
+
+					&.Left {
+						left: 0px;
+					}
+
+					&.Right {
+						right: 0px;
+					}
+				}
+			}
+
+			.NavigationButtonContainer {
+				display: grid;
+				margin: 5px;
+				place-items: center;
+			}
+		}
+	}
+}

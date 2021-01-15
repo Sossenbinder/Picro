@@ -2,8 +2,8 @@
 
 namespace Picro.Client.Services.Interface
 {
-    public interface INotificationsService
-    {
-        Task RequestNotificationSubscription();
-    }
+	public interface INotificationsService
+	{
+		Task RequestNotificationSubscription();
+	}
 }
